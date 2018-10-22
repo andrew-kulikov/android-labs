@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
         val versionCode = BuildConfig.VERSION_CODE
         val versionName = BuildConfig.VERSION_NAME
         val helloTextView = findViewById<View>(R.id.text_view_id) as TextView
+        
         helloTextView.text = versionName + " "  + versionCode
     }
 }
