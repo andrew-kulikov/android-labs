@@ -1,5 +1,15 @@
 apply plugin: 'com.android.application'
 
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    def desc = stdout.toString().trim().replace('-', '.')
+    return desc.substring(0, desc.length() - 9)
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -7,7 +17,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
-        versionName '1.0'
+        versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
