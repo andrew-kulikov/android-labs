@@ -1,5 +1,6 @@
 package com.example.kek.labs;
 
+import android.util.Log;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,5 +15,6 @@ public class MainActivity extends AppCompatActivity {
         String versionName = BuildConfig.VERSION_NAME;
         TextView text1 = findViewById(R.id.text1);
         text1.setText(versionName + "   " + BuildConfig.VERSION_CODE);
+        Log.i("TAG", "On create");
     }
 }
