@@ -2,12 +2,17 @@ package com.example.kek.labs;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private final int MY_REQUEST_CODE = 1488;
@@ -19,16 +24,39 @@ public class MainActivity extends AppCompatActivity {
 
         TextView text1 = findViewById(R.id.text1);
         text1.setText(BuildConfig.VERSION_NAME + "   " + BuildConfig.VERSION_CODE);
-        Log.i("TAG", "On create");
 
         if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_CONTACTS)) {
+                showAlert();
+            } else
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+        } else
+            setImeiText();
+    }
+
+    protected void setImeiText() {
+        try {
             TextView textImei = findViewById(R.id.imeiTextView);
-            textImei.setText(((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+            textImei.setText(((TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+        } catch (SecurityException e) {
+            Log.e("Error", "PERMISSION DENIED");
         }
+    }
 
-        requestPermissions(new String[] {Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
-
+    protected void showAlert() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle("Permission necessary");
+        alertBuilder.setMessage("External storage permission is necessary");
+        alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+            }
+        });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
     }
 
     @Override
@@ -36,24 +64,34 @@ public class MainActivity extends AppCompatActivity {
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    try {
-                        TextView textImei = findViewById(R.id.imeiTextView);
-                        textImei.setText(((TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
-                    }
-                    catch (SecurityException e) {
-                        Log.e("ALARMA", "PERMISSION DENIED");
-                    }
+                    setImeiText();
                 } else {
-                    requestPermissions(new String[] {Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE))
+                        showAlert();
+                    else
+                        requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
                 }
-                return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("Tag1", "OnPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("Tag1", "On stop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("Tag", "Destroy");
     }
 }
