@@ -12,7 +12,6 @@ import android.util.Log;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private final int MY_REQUEST_CODE = 1488;
@@ -29,9 +28,9 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             if (shouldShowRequestPermissionRationale(
                     Manifest.permission.READ_CONTACTS)) {
-                showAlert();
+                showPermissionExplanation();
             } else
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
         } else
             setImeiText();
     }
@@ -45,11 +44,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected void showAlert() {
+    protected void showPermissionExplanation() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setCancelable(true);
-        alertBuilder.setTitle("Permission necessary");
-        alertBuilder.setMessage("External storage permission is necessary");
+        alertBuilder.setTitle(R.string.permission_explanation_title);
+        alertBuilder.setMessage(R.string.permission_explanation_content);
         alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
@@ -62,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.i("permmm", String.valueOf(requestCode));
+        Log.i("permmm", String.valueOf(shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)));
         switch (requestCode) {
             case MY_REQUEST_CODE: {
                 if (grantResults.length > 0
@@ -69,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
                     setImeiText();
                 } else {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE))
-                        showAlert();
+                        showPermissionExplanation();
                     else
-                        requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
                 }
             }
         }
