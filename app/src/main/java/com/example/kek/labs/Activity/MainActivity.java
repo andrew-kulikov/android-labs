@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Menu;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -64,8 +65,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.i("permmm", String.valueOf(requestCode));
-        Log.i("permmm", String.valueOf(shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)));
+
         switch (requestCode) {
             case MY_REQUEST_CODE: {
                 if (grantResults.length > 0
@@ -82,20 +82,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("Tag1", "OnPause");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i("Tag1", "On stop");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("Tag", "Destroy");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_items, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }
