@@ -6,8 +6,10 @@ def getVersionName = { ->
         commandLine 'git', 'describe', '--tags'
         standardOutput = stdout
     }
-    def desc = stdout.toString().trim().replace('-', '.')
-    return desc.substring(0, desc.length() - 9)
+    def desc = stdout.toString().trim().replace(' ', '-').split('-')
+    def versionName = desc[0]
+    if (desc.length > 1) versionName += '.' + desc[1]
+    return versionName
 }
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
