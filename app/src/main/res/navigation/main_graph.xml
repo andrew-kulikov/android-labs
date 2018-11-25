@@ -23,7 +23,7 @@
         android:id="@+id/accountInfoFragment"
         android:name="com.example.kek.labs.Fragment.AccountInfoFragment"
         android:label="accont_info_fragment"
-        tools:layout="@layout/accont_info_fragment" />
+        tools:layout="@layout/account_info_fragment" />
     <fragment
         android:id="@+id/accountEditFragment"
         android:name="com.example.kek.labs.Fragment.AccountEditFragment"
