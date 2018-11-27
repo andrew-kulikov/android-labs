@@ -35,9 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationView navView = findViewById(R.id.nav_view);
 
-
         drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationUI.setupActionBarWithNavController(this, controller, drawerLayout);
+        NavigationUI.setupWithNavController(navView, controller);
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
