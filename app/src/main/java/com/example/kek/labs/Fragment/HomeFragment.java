@@ -27,15 +27,6 @@ public class HomeFragment extends Fragment {
                 .findFragmentById(R.id.nav_host_fragment);
         controller = host.getNavController();
 
-        homeView.findViewById(R.id.about_button_home).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        controller.navigate(R.id.accountInfoFragment);
-                    }
-                }
-        );
-
         return homeView;
     }
 
