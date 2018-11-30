@@ -45,15 +45,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(drawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Uri data = intent.getData();
-
-        TextView homeText = findViewById(R.id.home_text);
-
-        if (data != null && data.getPath() != null)
-            homeText.setText(data.getPath());
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.example.kek.labs.Fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.kek.labs.R;
 
@@ -26,6 +29,15 @@ public class HomeFragment extends Fragment {
                 .getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         controller = host.getNavController();
+
+        Intent intent = getActivity().getIntent();
+        String action = intent.getAction();
+        Uri data = intent.getData();
+
+        if (data != null) {
+            TextView homeText = homeView.findViewById(R.id.home_text);
+            homeText.setText(data.getPath());
+        }
 
         return homeView;
     }

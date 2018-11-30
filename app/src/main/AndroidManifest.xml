@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="www.aaa"
+                    android:host="www.aaa.kek"
                     android:scheme="http" />
             </intent-filter>
         </activity>
