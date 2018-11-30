@@ -4,6 +4,6 @@
     <item
         android:id="@+id/about_item"
         android:title="azaz"
-        android:icon="@drawable/about_black"
+        android:icon="@mipmap/about_black"
         app:showAsAction="ifRoom" />
 </menu>

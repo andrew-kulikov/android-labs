@@ -4,4 +4,6 @@
     <string name="permission_explanation_content">This permission will be used to see your beautiful IMEI</string>
     <string name="open">open</string>
     <string name="close">close</string>
+    <string name="build_info">%1$s %2$d</string>
+    <string name="info_email_text_view">Email</string>
 </resources>

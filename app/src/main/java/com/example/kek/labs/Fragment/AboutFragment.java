@@ -18,11 +18,10 @@ import com.example.kek.labs.R;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 public class AboutFragment extends Fragment {
-    private final int MY_REQUEST_CODE = 1488;
+    private final int REQUEST_PHONE_STATE_CODE = 1488;
     private View aboutView;
 
     @Nullable
@@ -32,7 +31,8 @@ public class AboutFragment extends Fragment {
 
         TextView text1 = aboutView.findViewById(R.id.text1);
 
-        text1.setText(BuildConfig.VERSION_NAME + "   " + BuildConfig.VERSION_CODE);
+        String versionCode = getString(R.string.build_info, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        text1.setText(versionCode);
 
         if (getActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -40,7 +40,7 @@ public class AboutFragment extends Fragment {
                     Manifest.permission.READ_CONTACTS)) {
                 showPermissionExplanation();
             } else
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_PHONE_STATE_CODE);
         } else
             setImeiText();
         return aboutView;
@@ -55,14 +55,14 @@ public class AboutFragment extends Fragment {
         }
     }
 
-    protected void showPermissionExplanation() {
+    private void showPermissionExplanation() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle(R.string.permission_explanation_title);
         alertBuilder.setMessage(R.string.permission_explanation_content);
         alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_PHONE_STATE_CODE);
             }
         });
         AlertDialog alert = alertBuilder.create();
@@ -75,15 +75,17 @@ public class AboutFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case MY_REQUEST_CODE: {
+            case REQUEST_PHONE_STATE_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setImeiText();
                 } else {
+
                     if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE))
                         showPermissionExplanation();
+
                     else
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_PHONE_STATE}, MY_REQUEST_CODE);
+                        requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_PHONE_STATE_CODE);
                 }
             }
         }

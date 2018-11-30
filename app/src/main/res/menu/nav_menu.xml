@@ -2,12 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/aboutFragment"
-        android:icon="@drawable/about_black"
         android:orderInCategory="1"
         android:title="about" />
     <item
         android:id="@+id/accountInfoFragment"
-        android:icon="@drawable/about_black"
         android:orderInCategory="1"
         android:title="account" />
 
