@@ -2,11 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/aboutFragment"
-        android:orderInCategory="1"
-        android:title="about" />
+        android:title="About" />
     <item
         android:id="@+id/accountInfoFragment"
-        android:orderInCategory="1"
-        android:title="account" />
+        android:title="Account" />
+
+    <item
+        android:id="@+id/accountEditFragment"
+        android:title="Edit" />
 
 </menu>

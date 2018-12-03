@@ -34,9 +34,18 @@ public class HomeFragment extends Fragment {
         String action = intent.getAction();
         Uri data = intent.getData();
 
-        if (data != null) {
-            TextView homeText = homeView.findViewById(R.id.home_text);
-            homeText.setText(data.getPath());
+        if (data != null && action.equals("android.intent.action.VIEW")) {
+            String path = data.getPath();
+            switch (path) {
+                case "/info":
+                    controller.navigate(R.id.accountInfoFragment);
+                    break;
+                case "/about":
+                    controller.navigate(R.id.aboutFragment);
+                    break;
+                default:
+                    break;
+            }
         }
 
         return homeView;

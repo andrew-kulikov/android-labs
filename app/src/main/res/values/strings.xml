@@ -9,4 +9,6 @@
     <string name="info_name_text_label">Name</string>
     <string name="info_surname_text_label">Surname</string>
     <string name="info_phone_text_label">Phone</string>
+    <string name="save_info_button">Save</string>
+    <string name="edit_account">Edit</string>
 </resources>
