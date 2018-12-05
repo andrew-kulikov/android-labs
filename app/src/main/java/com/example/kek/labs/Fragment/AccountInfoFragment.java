@@ -1,9 +1,13 @@
 package com.example.kek.labs.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +22,9 @@ import com.example.kek.labs.R;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -26,6 +32,7 @@ public class AccountInfoFragment extends Fragment {
     private View infoView;
     private ImageView logo;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_LOAD_IMAGE = 2;
     private String mCurrentPhotoPath;
 
     @Nullable
@@ -52,23 +59,73 @@ public class AccountInfoFragment extends Fragment {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            Intent intent = getPickImageIntent(getActivity());
+            startActivityForResult(intent, REQUEST_LOAD_IMAGE);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            logo.setImageBitmap(imageBitmap);
+        switch (requestCode){
+            case REQUEST_LOAD_IMAGE:{
+                if(resultCode != RESULT_OK)
+                    return;
+
+                Uri imageUri = data.getData();
+                //serialize avatar
+
+                logo.setImageURI(imageUri);
+                //serializeAvatar();
+                break;
+            }
+            case REQUEST_IMAGE_CAPTURE: {
+                if(resultCode != RESULT_OK)
+                    return;
+                Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
+
+                logo.setImageBitmap(takenPhoto);
+                //serializeAvatar();
+                //getDialog().dismiss();
+                break;
+            }
         }
     }
 
+    public static Intent getPickImageIntent(Context context) {
+        Intent chooserIntent = null;
 
+        List<Intent> intentList = new ArrayList<>();
+
+        Intent pickIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickIntent.putExtra("requestCode", REQUEST_LOAD_IMAGE);
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePhotoIntent.putExtra("return-data", true);
+        takePhotoIntent.putExtra("requestCode", REQUEST_IMAGE_CAPTURE);
+        intentList = addIntentsToList(context, intentList, pickIntent);
+        intentList = addIntentsToList(context, intentList, takePhotoIntent);
+
+        if (intentList.size() > 0) {
+            chooserIntent = Intent.createChooser(intentList.remove(intentList.size() - 1),
+                    context.getString(R.string.edit_account));
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentList.toArray(new Parcelable[]{}));
+        }
+
+        return chooserIntent;
+    }
+
+    private static List<Intent> addIntentsToList(Context context, List<Intent> list, Intent intent) {
+        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(intent, 0);
+        for (ResolveInfo resolveInfo : resInfo) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            Intent targetedIntent = new Intent(intent);
+            targetedIntent.setPackage(packageName);
+            list.add(targetedIntent);
+        }
+        return list;
+    }
 
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -78,7 +135,6 @@ public class AccountInfoFragment extends Fragment {
                 storageDir      /* directory */
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
