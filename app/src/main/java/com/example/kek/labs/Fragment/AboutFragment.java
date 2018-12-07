@@ -37,7 +37,7 @@ public class AboutFragment extends Fragment {
         if (getActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
             if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.READ_CONTACTS)) {
+                    Manifest.permission.READ_PHONE_STATE)) {
                 showPermissionExplanation();
             } else
                 requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_PHONE_STATE_CODE);
