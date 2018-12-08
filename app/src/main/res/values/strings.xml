@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">labs</string>
-    <string name="permission_explanation_title">Please provide the phone permission</string>
-    <string name="permission_explanation_content">This permission will be used to see your beautiful IMEI</string>
+    <string name="permission_explanation_title">Please provide permissions</string>
+    <string name="permission_explanation_content">This permissions will be used to read your IMEI and saving photos</string>
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="build_info">%1$s %2$d</string>

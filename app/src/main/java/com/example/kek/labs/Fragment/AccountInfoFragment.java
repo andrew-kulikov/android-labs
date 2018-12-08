@@ -91,14 +91,9 @@ public class AccountInfoFragment extends Fragment {
             }
         });
 
-        if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                showPermissionExplanation();
-            } else
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_WRITE);
-        }
+        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
+
+        cleverRequest(permissions);
 
         GlideApp.with(getContext())
                 .load(getLogoDirectoryPath() + "/logo.jpg")
@@ -108,6 +103,31 @@ public class AccountInfoFragment extends Fragment {
                 .into(logo);
 
         return infoView;
+    }
+
+    public void cleverRequest(String[] permissions) {
+        ArrayList<String> toRequest = new ArrayList<>();
+        ArrayList<String> toExplain = new ArrayList<>();
+
+        for (String permission : permissions) {
+            int hasPermission = getActivity().checkSelfPermission(permission);
+            if (hasPermission != PackageManager.PERMISSION_GRANTED)
+                if (shouldShowRequestPermissionRationale(permission))
+                    toExplain.add(permission);
+                else
+                    toRequest.add(permission);
+        }
+        String[] toExplainArray = new String[toExplain.size()];
+        toExplainArray = toExplain.toArray(toExplainArray);
+
+        if (toExplainArray != null && toExplain.size() > 0)
+            showPermissionExplanation(toExplainArray);
+
+        String[] toRequestArray = new String[toRequest.size()];
+        toRequestArray = toRequest.toArray(toRequestArray);
+
+        if (toRequestArray != null && toRequest.size() > 0)
+            requestPermissions(toRequestArray, REQUEST_WRITE);
     }
 
     @Override
@@ -147,14 +167,6 @@ public class AccountInfoFragment extends Fragment {
 
                 break;
             }
-            case REQUEST_IMAGE_CAPTURE: {
-                if (resultCode != RESULT_OK)
-                    return;
-                Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
-
-                logo.setImageBitmap(takenPhoto);
-                break;
-            }
         }
     }
 
@@ -168,11 +180,9 @@ public class AccountInfoFragment extends Fragment {
     private File getOutputMediaFile() {
         File mediaStorageDir = new File(getLogoDirectoryPath());
 
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
+        if (!mediaStorageDir.exists())
+            if (!mediaStorageDir.mkdirs())
                 return null;
-            }
-        }
 
         File mediaFile;
         String mImageName = "logo.jpg";
@@ -196,14 +206,14 @@ public class AccountInfoFragment extends Fragment {
         }
     }
 
-    private void showPermissionExplanation() {
+    private void showPermissionExplanation(final String[] permissions) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle(R.string.permission_explanation_title);
         alertBuilder.setMessage(R.string.permission_explanation_content);
         alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE);
+                requestPermissions(permissions, REQUEST_WRITE);
             }
         });
         AlertDialog alert = alertBuilder.create();
@@ -212,20 +222,9 @@ public class AccountInfoFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case REQUEST_WRITE: {
-                if (grantResults.length <= 1
-                        || grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                        showPermissionExplanation();
-                    else
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE);
-                }
-            }
-        }
+        cleverRequest(permissions);
     }
 }
