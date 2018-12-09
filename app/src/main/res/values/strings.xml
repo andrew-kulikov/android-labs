@@ -11,4 +11,8 @@
     <string name="info_phone_text_label">Phone</string>
     <string name="save_info_button">Save</string>
     <string name="edit_account">Edit</string>
+    <string name="surname_default">Pupkin</string>
+    <string name="name_default">Vasya</string>
+    <string name="email_default">vasya@google.com</string>
+    <string name="phone_default">+375228322</string>
 </resources>

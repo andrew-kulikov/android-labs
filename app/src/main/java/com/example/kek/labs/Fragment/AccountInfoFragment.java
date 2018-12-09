@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,10 +51,18 @@ public class AccountInfoFragment extends Fragment {
         String data = fileManager.read("storage.json");
         try {
             JSONObject json = new JSONObject(data);
-            setText(R.id.info_email_textView, json.getString("email"));
-            setText(R.id.info_name_textView, json.getString("name"));
-            setText(R.id.info_surname_textView, json.getString("surname"));
-            setText(R.id.info_phone_textView, json.getString("phone"));
+            setText(R.id.info_email_textView,
+                    json.getString("email"),
+                    getString(R.string.email_default));
+            setText(R.id.info_name_textView,
+                    json.getString("name"),
+                    getString(R.string.name_default));
+            setText(R.id.info_surname_textView,
+                    json.getString("surname"),
+                    getString(R.string.surname_default));
+            setText(R.id.info_phone_textView,
+                    json.getString("phone"),
+                    getString(R.string.phone_default));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -63,8 +70,9 @@ public class AccountInfoFragment extends Fragment {
         return infoView;
     }
 
-    private void setText(int viewId, String value) {
-        ((TextView) infoView.findViewById(viewId)).setText(value);
+    private void setText(int viewId, String value, String defaultValue) {
+        String finalValue = value != null ? value : defaultValue;
+        ((TextView) infoView.findViewById(viewId)).setText(finalValue);
     }
 
     @Override

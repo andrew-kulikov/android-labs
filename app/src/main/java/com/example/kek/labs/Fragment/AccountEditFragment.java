@@ -74,10 +74,18 @@ public class AccountEditFragment extends Fragment {
         String data = fileManager.read("storage.json");
         try {
             JSONObject json = new JSONObject(data);
-            setText(R.id.info_email_textEdit, json.getString("email"));
-            setText(R.id.info_name_textEdit, json.getString("name"));
-            setText(R.id.info_surname_textEdit, json.getString("surname"));
-            setText(R.id.info_phone_textEdit, json.getString("phone"));
+            setText(R.id.info_email_textEdit,
+                    json.getString("email"),
+                    getString(R.string.email_default));
+            setText(R.id.info_name_textEdit,
+                    json.getString("name"),
+                    getString(R.string.name_default));
+            setText(R.id.info_surname_textEdit,
+                    json.getString("surname"),
+                    getString(R.string.surname_default));
+            setText(R.id.info_phone_textEdit,
+                    json.getString("phone"),
+                    getString(R.string.phone_default));
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -86,8 +94,9 @@ public class AccountEditFragment extends Fragment {
         return editView;
     }
 
-    private void setText(int viewId, String value) {
-        ((EditText) editView.findViewById(viewId)).setText(value);
+    private void setText(int viewId, String value, String defaultValue) {
+        String finalValue = value != null ? value : defaultValue;
+        ((EditText) editView.findViewById(viewId)).setText(finalValue);
     }
 
 
