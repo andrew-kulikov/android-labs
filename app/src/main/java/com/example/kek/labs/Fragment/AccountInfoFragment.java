@@ -34,7 +34,7 @@ public class AccountInfoFragment extends Fragment {
                 .findFragmentById(R.id.nav_host_fragment);
         final NavController controller = host.getNavController();
 
-        infoView.findViewById(R.id.selectLogoButton).setOnClickListener(new View.OnClickListener() {
+        infoView.findViewById(R.id.edit_info_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 controller.navigate(R.id.accountEditFragment);
