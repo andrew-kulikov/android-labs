@@ -22,31 +22,46 @@ import androidx.navigation.fragment.NavHostFragment;
 
 public class AccountInfoFragment extends Fragment {
     private View infoView;
+    private NavController navController;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         infoView = inflater.inflate(R.layout.account_info_fragment, container, false);
 
+        setupLogo();
+        setupNavController();
+        setEditButtonClick();
+        setupTextViews();
+
+        return infoView;
+    }
+
+    private void setupLogo() {
         ImageView logo = infoView.findViewById(R.id.accountLogo);
         ImageManager imageManager = new ImageManager(getActivity());
-
         imageManager.LoadImage(logo,
                 "logo.jpg",
                 R.drawable.about);
+    }
 
+    private void setupNavController() {
         NavHostFragment host = (NavHostFragment) getActivity()
                 .getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        final NavController controller = host.getNavController();
+        navController = host.getNavController();
+    }
 
+    private void setEditButtonClick() {
         infoView.findViewById(R.id.edit_info_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controller.navigate(R.id.accountEditFragment);
+                navController.navigate(R.id.accountEditFragment);
             }
         });
+    }
 
+    private void setupTextViews() {
         FileManager fileManager = new FileManager(getActivity());
         if (fileManager.isFilePresent("storage.json")) {
             String data = fileManager.read("storage.json");
@@ -68,8 +83,6 @@ public class AccountInfoFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-
-        return infoView;
     }
 
     private void setText(int viewId, String value, String defaultValue) {
