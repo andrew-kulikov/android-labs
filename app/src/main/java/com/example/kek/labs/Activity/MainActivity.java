@@ -1,14 +1,8 @@
 package com.example.kek.labs.Activity;
 
-import android.Manifest;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.kek.labs.R;
 import com.google.android.material.navigation.NavigationView;
@@ -33,9 +27,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupNavController();
+        setupNavigationDrawer();
+    }
+
+    private void setupNavController() {
         NavHostFragment host = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         controller = host.getNavController();
+    }
 
+    private void setupNavigationDrawer() {
         NavigationView navView = findViewById(R.id.nav_view);
 
         drawerLayout = findViewById(R.id.drawer_layout);
