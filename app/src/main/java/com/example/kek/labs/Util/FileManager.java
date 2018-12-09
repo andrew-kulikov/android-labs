@@ -1,7 +1,8 @@
 package com.example.kek.labs.Util;
 
-import android.app.Activity;
 import android.os.Environment;
+
+import com.example.kek.labs.MyApplication;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,12 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class FileManager {
-    private Activity activity;
-
-    public FileManager(Activity activity) {
-        this.activity = activity;
-    }
-
     public String read(String fileName) {
         try {
             File file = new File(getDirectoryPath() + File.separator + fileName);
@@ -40,7 +35,7 @@ public class FileManager {
     public String getDirectoryPath() {
         return Environment.getExternalStorageDirectory()
                 + "/Android/data/"
-                + activity.getApplicationContext().getPackageName()
+                + MyApplication.getAppContext().getPackageName()
                 + "/Files";
     }
 

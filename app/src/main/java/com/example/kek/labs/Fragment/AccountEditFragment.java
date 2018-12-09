@@ -86,7 +86,7 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void setupTextViews() {
-        FileManager fileManager = new FileManager(getActivity());
+        FileManager fileManager = new FileManager();
         if (fileManager.isFilePresent("storage.json")) {
             String data = fileManager.read("storage.json");
             try {
@@ -156,7 +156,7 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void onSaveButtonClick() {
-        FileManager fileManager = new FileManager(getActivity());
+        FileManager fileManager = new FileManager();
 
         String userJson = constructJson();
         Log.i("Save", userJson);
