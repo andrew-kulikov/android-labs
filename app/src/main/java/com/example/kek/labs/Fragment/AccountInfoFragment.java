@@ -48,23 +48,25 @@ public class AccountInfoFragment extends Fragment {
         });
 
         FileManager fileManager = new FileManager(getActivity());
-        String data = fileManager.read("storage.json");
-        try {
-            JSONObject json = new JSONObject(data);
-            setText(R.id.info_email_textView,
-                    json.getString("email"),
-                    getString(R.string.email_default));
-            setText(R.id.info_name_textView,
-                    json.getString("name"),
-                    getString(R.string.name_default));
-            setText(R.id.info_surname_textView,
-                    json.getString("surname"),
-                    getString(R.string.surname_default));
-            setText(R.id.info_phone_textView,
-                    json.getString("phone"),
-                    getString(R.string.phone_default));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (fileManager.isFilePresent("storage.json")) {
+            String data = fileManager.read("storage.json");
+            try {
+                JSONObject json = new JSONObject(data);
+                setText(R.id.info_email_textView,
+                        json.getString("email"),
+                        getString(R.string.email_default));
+                setText(R.id.info_name_textView,
+                        json.getString("name"),
+                        getString(R.string.name_default));
+                setText(R.id.info_surname_textView,
+                        json.getString("surname"),
+                        getString(R.string.surname_default));
+                setText(R.id.info_phone_textView,
+                        json.getString("phone"),
+                        getString(R.string.phone_default));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         return infoView;
