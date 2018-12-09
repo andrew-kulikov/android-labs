@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.GlideApp;
+import com.example.kek.labs.Util.PermissionManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +33,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import static android.app.Activity.RESULT_OK;
@@ -43,6 +43,7 @@ public class AccountInfoFragment extends Fragment {
     private static final int REQUEST_WRITE = 3;
     private View infoView;
     private ImageView logo;
+    private PermissionManager permissionManager;
 
     private static Intent getPickImageIntent(Context context) {
         Intent chooserIntent = null;
@@ -93,7 +94,8 @@ public class AccountInfoFragment extends Fragment {
 
         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
 
-        cleverRequest(permissions);
+        permissionManager = new PermissionManager(this);
+        permissionManager.requestPermissions(permissions, REQUEST_WRITE);
 
         GlideApp.with(getContext())
                 .load(getLogoDirectoryPath() + "/logo.jpg")
@@ -103,31 +105,6 @@ public class AccountInfoFragment extends Fragment {
                 .into(logo);
 
         return infoView;
-    }
-
-    public void cleverRequest(String[] permissions) {
-        ArrayList<String> toRequest = new ArrayList<>();
-        ArrayList<String> toExplain = new ArrayList<>();
-
-        for (String permission : permissions) {
-            int hasPermission = getActivity().checkSelfPermission(permission);
-            if (hasPermission != PackageManager.PERMISSION_GRANTED)
-                if (shouldShowRequestPermissionRationale(permission))
-                    toExplain.add(permission);
-                else
-                    toRequest.add(permission);
-        }
-        String[] toExplainArray = new String[toExplain.size()];
-        toExplainArray = toExplain.toArray(toExplainArray);
-
-        if (toExplainArray != null && toExplain.size() > 0)
-            showPermissionExplanation(toExplainArray);
-
-        String[] toRequestArray = new String[toRequest.size()];
-        toRequestArray = toRequest.toArray(toRequestArray);
-
-        if (toRequestArray != null && toRequest.size() > 0)
-            requestPermissions(toRequestArray, REQUEST_WRITE);
     }
 
     @Override
@@ -206,25 +183,13 @@ public class AccountInfoFragment extends Fragment {
         }
     }
 
-    private void showPermissionExplanation(final String[] permissions) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
-        alertBuilder.setCancelable(true);
-        alertBuilder.setTitle(R.string.permission_explanation_title);
-        alertBuilder.setMessage(R.string.permission_explanation_content);
-        alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                requestPermissions(permissions, REQUEST_WRITE);
-            }
-        });
-        AlertDialog alert = alertBuilder.create();
-        alert.show();
-    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        cleverRequest(permissions);
+        permissionManager.requestPermissions(permissions, REQUEST_WRITE);
     }
 }
