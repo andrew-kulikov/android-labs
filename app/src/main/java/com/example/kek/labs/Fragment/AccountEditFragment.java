@@ -7,14 +7,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.FileManager;
 import com.example.kek.labs.Util.ImageManager;
 import com.example.kek.labs.Util.PermissionManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,10 +45,17 @@ public class AccountEditFragment extends Fragment {
         logo = editView.findViewById(R.id.accountLogo);
 
         logo = editView.findViewById(R.id.accountLogo);
-        editView.findViewById(R.id.save_info_button).setOnClickListener(new View.OnClickListener() {
+        editView.findViewById(R.id.edit_logo_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
+            }
+        });
+
+        editView.findViewById(R.id.save_info_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSaveButtonClick();
             }
         });
 
@@ -57,7 +70,24 @@ public class AccountEditFragment extends Fragment {
                 "logo.jpg",
                 R.drawable.about);
 
+        FileManager fileManager = new FileManager(getActivity());
+        String data = fileManager.read("storage.json");
+        try {
+            JSONObject json = new JSONObject(data);
+            setText(R.id.info_email_textEdit, json.getString("email"));
+            setText(R.id.info_name_textEdit, json.getString("name"));
+            setText(R.id.info_surname_textEdit, json.getString("surname"));
+            setText(R.id.info_phone_textEdit, json.getString("phone"));
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return editView;
+    }
+
+    private void setText(int viewId, String value) {
+        ((EditText) editView.findViewById(viewId)).setText(value);
     }
 
 
@@ -105,6 +135,39 @@ public class AccountEditFragment extends Fragment {
                 imageManager.storeImage(takenPhoto);
             }
         }
+    }
+
+    private void onSaveButtonClick() {
+        FileManager fileManager = new FileManager(getActivity());
+
+        String userJson = constructJson();
+        Log.i("Save", userJson);
+        boolean isFileCreated = fileManager.create("storage.json", userJson);
+        if (isFileCreated) {
+            Log.i("Save", "Ok");
+        } else {
+            //show error or try again.
+        }
+
+    }
+
+    private String constructJson() {
+        String email = ((EditText) editView.findViewById(R.id.info_email_textEdit)).getText().toString();
+        String name = ((EditText) editView.findViewById(R.id.info_name_textEdit)).getText().toString();
+        String surname = ((EditText) editView.findViewById(R.id.info_surname_textEdit)).getText().toString();
+        String phone = ((EditText) editView.findViewById(R.id.info_phone_textEdit)).getText().toString();
+        JSONObject json = new JSONObject();
+        try {
+            json.put("email", email);
+            json.put("name", name);
+            json.put("surname", surname);
+            json.put("phone", phone);
+
+            return json.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override

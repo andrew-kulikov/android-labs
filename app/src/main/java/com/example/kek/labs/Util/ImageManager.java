@@ -62,7 +62,7 @@ public class ImageManager {
         return list;
     }
 
-    public String getLogoDirectoryPath() {
+    private String getLogoDirectoryPath() {
         return Environment.getExternalStorageDirectory()
                 + "/Android/data/"
                 + activity.getApplicationContext().getPackageName()
