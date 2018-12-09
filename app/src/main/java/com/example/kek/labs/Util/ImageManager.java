@@ -1,6 +1,5 @@
 package com.example.kek.labs.Util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -12,6 +11,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.kek.labs.MyApplication;
 import com.example.kek.labs.R;
 
 import java.io.File;
@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageManager {
-    private Activity activity;
+    private Context context;
 
-    public ImageManager(Activity activity) {
-        this.activity = activity;
+    public ImageManager() {
+        this.context = MyApplication.getAppContext();
     }
 
     public Intent getPickImageIntent(int requestCameraCode, int requestLoadCode) {
@@ -44,7 +44,7 @@ public class ImageManager {
 
         if (intentList.size() > 0) {
             chooserIntent = Intent.createChooser(intentList.remove(intentList.size() - 1),
-                    activity.getString(R.string.edit_account));
+                    context.getString(R.string.edit_account));
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentList.toArray(new Parcelable[]{}));
         }
 
@@ -52,7 +52,7 @@ public class ImageManager {
     }
 
     private List<Intent> addIntentsToList(List<Intent> list, Intent intent) {
-        List<ResolveInfo> resInfo = activity.getPackageManager().queryIntentActivities(intent, 0);
+        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(intent, 0);
         for (ResolveInfo resolveInfo : resInfo) {
             String packageName = resolveInfo.activityInfo.packageName;
             Intent targetedIntent = new Intent(intent);
@@ -65,12 +65,12 @@ public class ImageManager {
     private String getLogoDirectoryPath() {
         return Environment.getExternalStorageDirectory()
                 + "/Android/data/"
-                + activity.getApplicationContext().getPackageName()
+                + context.getApplicationContext().getPackageName()
                 + "/Files";
     }
 
     public void LoadImage(ImageView to, String path, int alternative) {
-        GlideApp.with(activity)
+        GlideApp.with(context)
                 .load(getLogoDirectoryPath() + File.separator + path)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)

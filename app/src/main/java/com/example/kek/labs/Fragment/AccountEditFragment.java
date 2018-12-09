@@ -78,7 +78,7 @@ public class AccountEditFragment extends Fragment {
 
     private void setupLogo() {
         logo = editView.findViewById(R.id.accountLogo);
-        imageManager = new ImageManager(this.getActivity());
+        imageManager = new ImageManager();
         imageManager.LoadImage(
                 logo,
                 "logo.jpg",
