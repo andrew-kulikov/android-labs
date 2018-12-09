@@ -54,7 +54,7 @@ public class AccountEditFragment extends Fragment {
         imageManager = new ImageManager(this.getActivity());
         imageManager.LoadImage(
                 logo,
-                imageManager.getLogoDirectoryPath() + "/logo.jpg",
+                "logo.jpg",
                 R.drawable.about);
 
         return editView;

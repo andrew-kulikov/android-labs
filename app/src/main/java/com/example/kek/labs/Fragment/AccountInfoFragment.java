@@ -26,7 +26,7 @@ public class AccountInfoFragment extends Fragment {
         ImageManager imageManager = new ImageManager(getActivity());
 
         imageManager.LoadImage(logo,
-                imageManager.getLogoDirectoryPath() + "/logo.jpg",
+                "logo.jpg",
                 R.drawable.about);
 
         NavHostFragment host = (NavHostFragment) getActivity()

@@ -71,7 +71,7 @@ public class ImageManager {
 
     public void LoadImage(ImageView to, String path, int alternative) {
         GlideApp.with(activity)
-                .load(path)
+                .load(getLogoDirectoryPath() + File.separator + path)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .error(alternative)
