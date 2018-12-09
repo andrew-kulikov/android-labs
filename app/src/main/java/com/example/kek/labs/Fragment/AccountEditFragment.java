@@ -42,34 +42,50 @@ public class AccountEditFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         editView = inflater.inflate(R.layout.account_edit_fragment, container, false);
 
-        logo = editView.findViewById(R.id.accountLogo);
+        setEditLogoClick();
+        setSaveClick();
+        setupPermissions();
+        setupLogo();
+        setupTextViews();
 
-        logo = editView.findViewById(R.id.accountLogo);
-        editView.findViewById(R.id.edit_logo_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchTakePictureIntent();
-            }
-        });
+        return editView;
+    }
 
+    private void setSaveClick() {
         editView.findViewById(R.id.save_info_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onSaveButtonClick();
             }
         });
+    }
 
+    private void setEditLogoClick() {
+        editView.findViewById(R.id.edit_logo_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
+    }
+
+    private void setupPermissions() {
         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
 
         permissionManager = new PermissionManager(this);
         permissionManager.requestPermissions(permissions, REQUEST_WRITE);
+    }
 
+    private void setupLogo() {
+        logo = editView.findViewById(R.id.accountLogo);
         imageManager = new ImageManager(this.getActivity());
         imageManager.LoadImage(
                 logo,
                 "logo.jpg",
                 R.drawable.about);
+    }
 
+    private void setupTextViews() {
         FileManager fileManager = new FileManager(getActivity());
         if (fileManager.isFilePresent("storage.json")) {
             String data = fileManager.read("storage.json");
@@ -91,8 +107,6 @@ public class AccountEditFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-
-        return editView;
     }
 
     private void setText(int viewId, String value, String defaultValue) {
@@ -116,31 +130,25 @@ public class AccountEditFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK)
+            return;
         switch (requestCode) {
             case REQUEST_LOAD_IMAGE: {
-                if (resultCode != RESULT_OK)
-                    return;
-
                 Uri imageUri = data.getData();
 
                 if (imageUri != null) {
                     logo.setImageURI(imageUri);
-
                     Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
-
                     imageManager.storeImage(bmp);
                 } else {
                     Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
-
                     logo.setImageBitmap(takenPhoto);
                     imageManager.storeImage(takenPhoto);
                 }
-
                 break;
             }
             case REQUEST_IMAGE_CAPTURE: {
                 Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
-
                 logo.setImageBitmap(takenPhoto);
                 imageManager.storeImage(takenPhoto);
             }
