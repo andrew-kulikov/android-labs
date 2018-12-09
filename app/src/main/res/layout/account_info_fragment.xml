@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,7 +27,8 @@
         <TextView
             android:id="@+id/info_email_textView"
             style="@style/TextBox"
-            android:text="vasya_pupkin322@gmail.com"
+            android:layout_height="49dp"
+            android:text="@string/email_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/accountLogo" />
@@ -34,7 +36,7 @@
         <TextView
             android:id="@+id/info_name_textView"
             style="@style/TextBox"
-            android:text="Vasya"
+            android:text="@string/name_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_email_textView" />
@@ -42,7 +44,7 @@
         <TextView
             android:id="@+id/info_surname_textView"
             style="@style/TextBox"
-            android:text="Pupkin"
+            android:text="@string/surname_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_name_textView" />
@@ -50,7 +52,7 @@
         <TextView
             android:id="@+id/info_phone_textView"
             style="@style/TextBox"
-            android:text="322"
+            android:text="@string/phone_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_surname_textView" />

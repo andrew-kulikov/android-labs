@@ -26,7 +26,7 @@
         <EditText
             android:id="@+id/info_email_textEdit"
             style="@style/TextEdit"
-            android:text="vasya_pupkin322@gmail.com"
+            android:text="@string/email_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/accountLogo" />
@@ -34,7 +34,7 @@
         <EditText
             android:id="@+id/info_name_textEdit"
             style="@style/TextEdit"
-            android:text="Vasya"
+            android:text="@string/name_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_email_textEdit" />
@@ -42,7 +42,7 @@
         <EditText
             android:id="@+id/info_surname_textEdit"
             style="@style/TextEdit"
-            android:text="Pupkin"
+            android:text="@string/surname_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_name_textEdit" />
@@ -50,7 +50,7 @@
         <EditText
             android:id="@+id/info_phone_textEdit"
             style="@style/TextEdit"
-            android:text="322"
+            android:text="@string/phone_default"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/info_surname_textEdit" />
