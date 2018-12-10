@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">labs</string>
+    <string name="app_name">News</string>
     <string name="permission_explanation_title">Please provide permissions</string>
     <string name="permission_explanation_content">This permissions will be used to read your IMEI and saving photos</string>
     <string name="open">open</string>
