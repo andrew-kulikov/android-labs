@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/accountLogo"
             android:layout_width="153dp"
             android:layout_height="135dp"
@@ -21,7 +21,7 @@
             app:layout_constraintHorizontal_bias="0.51"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/about" />
+            android:src="@drawable/about" />
 
         <EditText
             android:id="@+id/info_email_textEdit"
