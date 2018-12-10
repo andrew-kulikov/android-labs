@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.Data.Storage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
@@ -144,6 +145,7 @@ public class AccountEditFragment extends Fragment {
                 imageManager.storeImage(takenPhoto);
             }
         }
+        ((MainActivity) getActivity()).refreshHeader();
     }
 
     private void onSaveButtonClick() {
@@ -153,6 +155,7 @@ public class AccountEditFragment extends Fragment {
                 getViewText(R.id.info_surname_textEdit),
                 getViewText(R.id.info_phone_textEdit));
         Storage.setApplicationUser(user, "storage.json");
+        ((MainActivity) getActivity()).refreshHeader();
     }
 
     private String getViewText(int viewId) {

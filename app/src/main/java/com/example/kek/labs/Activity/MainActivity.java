@@ -3,11 +3,15 @@ package com.example.kek.labs.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.kek.labs.Data.Storage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.FileManager;
+import com.example.kek.labs.Util.ImageManager;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
@@ -46,8 +50,27 @@ public class MainActivity extends AppCompatActivity {
         controller = host.getNavController();
     }
 
+    public void refreshHeader() {
+        NavigationView navView = findViewById(R.id.nav_view);
+        View headerView = navView.getHeaderView(0);
+        ImageView logo = headerView.findViewById(R.id.accountLogo);
+        new ImageManager().LoadImage(
+                logo,
+                "logo.jpg",
+                R.drawable.about);
+        ((TextView) headerView.findViewById(R.id.header_email_text)).setText(Storage.getApplicationUser().getEmail());
+    }
+
     private void setupNavigationDrawer() {
         NavigationView navView = findViewById(R.id.nav_view);
+        View headerView = navView.getHeaderView(0);
+        ImageView logo = headerView.findViewById(R.id.accountLogo);
+
+        new ImageManager().LoadImage(
+                logo,
+                "logo.jpg",
+                R.drawable.about);
+        ((TextView) headerView.findViewById(R.id.header_email_text)).setText(Storage.getApplicationUser().getEmail());
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationUI.setupWithNavController(navView, controller);
@@ -75,9 +98,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (drawerToggle.onOptionsItemSelected(item))
             return true;
+
         switch (id) {
             case R.id.about_item:
                 controller.navigate(R.id.aboutFragment);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);

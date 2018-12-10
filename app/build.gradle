@@ -90,4 +90,5 @@ dependencies {
     annotationProcessor 'androidx.annotation:annotation:1.0.0'
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha07'
     implementation 'com.google.firebase:firebase-auth:16.0.1'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }
