@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.kek.labs.Data.Storage;
+import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.FileManager;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
@@ -27,8 +30,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupUser();
         setupNavController();
         setupNavigationDrawer();
+    }
+
+    private void setupUser() {
+        User user = new FileManager().getUser("storage.json");
+
+        Storage.setApplicationUser(user);
     }
 
     private void setupNavController() {

@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.example.kek.labs.Data.Storage;
+import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.FileManager;
 import com.example.kek.labs.Util.ImageManager;
@@ -86,27 +88,21 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void setupTextViews() {
-        FileManager fileManager = new FileManager();
-        if (fileManager.isFilePresent("storage.json")) {
-            String data = fileManager.read("storage.json");
-            try {
-                JSONObject json = new JSONObject(data);
-                setText(R.id.info_email_textEdit,
-                        json.getString("email"),
-                        getString(R.string.email_default));
-                setText(R.id.info_name_textEdit,
-                        json.getString("name"),
-                        getString(R.string.name_default));
-                setText(R.id.info_surname_textEdit,
-                        json.getString("surname"),
-                        getString(R.string.surname_default));
-                setText(R.id.info_phone_textEdit,
-                        json.getString("phone"),
-                        getString(R.string.phone_default));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        User user = Storage.getApplicationUser();
+        if (user == null) return;
+
+        setText(R.id.info_email_textEdit,
+                user.getEmail(),
+                getString(R.string.email_default));
+        setText(R.id.info_name_textEdit,
+                user.getName(),
+                getString(R.string.name_default));
+        setText(R.id.info_surname_textEdit,
+                user.getSurname(),
+                getString(R.string.surname_default));
+        setText(R.id.info_phone_textEdit,
+                user.getPhone(),
+                getString(R.string.phone_default));
     }
 
     private void setText(int viewId, String value, String defaultValue) {
@@ -156,6 +152,7 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void onSaveButtonClick() {
+        /*
         FileManager fileManager = new FileManager();
 
         String userJson = constructJson();
@@ -166,7 +163,17 @@ public class AccountEditFragment extends Fragment {
         } else {
             //show error or try again.
         }
+*/
+        User user = new User(
+                getViewText(R.id.info_email_textEdit),
+                getViewText(R.id.info_name_textEdit),
+                getViewText(R.id.info_surname_textEdit),
+                getViewText(R.id.info_phone_textEdit));
+        Storage.setApplicationUser(user, "storage.json");
+    }
 
+    private String getViewText(int viewId) {
+        return ((EditText) editView.findViewById(viewId)).getText().toString();
     }
 
     private String constructJson() {
