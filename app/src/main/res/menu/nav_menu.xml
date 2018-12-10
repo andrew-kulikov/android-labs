@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/aboutFragment"
-        android:title="About" />
-    <item
-        android:id="@+id/accountInfoFragment"
-        android:title="Account" />
+    <group android:id="@+id/main_group">
+        <item
+            android:id="@+id/homeFragment"
+            android:title="@string/home" />
 
-    <item
-        android:id="@+id/accountEditFragment"
-        android:title="Edit" />
+        <item
+            android:id="@+id/accountInfoFragment"
+            android:title="@string/account" />
+    </group>
 
+    <group android:id="@+id/additional_group">
+        <item
+            android:id="@+id/aboutFragment"
+            android:title="@string/about" />
+    </group>
 </menu>

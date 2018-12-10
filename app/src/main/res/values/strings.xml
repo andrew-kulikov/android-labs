@@ -16,4 +16,6 @@
     <string name="email_default">vasya@google.com</string>
     <string name="phone_default">+375228322</string>
     <string name="about">About</string>
+    <string name="home">Home</string>
+    <string name="account">Account</string>
 </resources>
