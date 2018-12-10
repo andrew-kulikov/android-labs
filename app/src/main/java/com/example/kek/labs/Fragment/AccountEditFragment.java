@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.Data.Storage;
@@ -154,7 +155,14 @@ public class AccountEditFragment extends Fragment {
                 getViewText(R.id.info_name_textEdit),
                 getViewText(R.id.info_surname_textEdit),
                 getViewText(R.id.info_phone_textEdit));
-        Storage.setApplicationUser(user, "storage.json");
+
+        try {
+            Storage.setApplicationUser(user, "storage.json");
+            Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            Toast.makeText(getContext(), "Error while saving user", Toast.LENGTH_LONG).show();
+        }
         ((MainActivity) getActivity()).refreshHeader();
     }
 
