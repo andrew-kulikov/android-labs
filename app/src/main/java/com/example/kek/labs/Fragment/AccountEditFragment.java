@@ -20,6 +20,7 @@ import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.ImageManager;
 import com.example.kek.labs.Util.PermissionManager;
+import com.example.kek.labs.Util.Validator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -150,11 +151,26 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void onSaveButtonClick() {
+        boolean hasErrors = false;
+        String email = getViewText(R.id.info_email_textEdit);
+        if (!Validator.isValidEmail(email)) {
+            ((EditText) editView.findViewById(R.id.info_email_textEdit)).setError("Invalid email");
+            hasErrors = true;
+        }
+
+        String phone = getViewText(R.id.info_phone_textEdit);
+        if (!Validator.isValidPhone(phone)) {
+            ((EditText) editView.findViewById(R.id.info_phone_textEdit)).setError("Invalid phone");
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
+
         User user = new User(
-                getViewText(R.id.info_email_textEdit),
+                email,
                 getViewText(R.id.info_name_textEdit),
                 getViewText(R.id.info_surname_textEdit),
-                getViewText(R.id.info_phone_textEdit));
+                phone);
 
         try {
             Storage.setApplicationUser(user, "storage.json");
