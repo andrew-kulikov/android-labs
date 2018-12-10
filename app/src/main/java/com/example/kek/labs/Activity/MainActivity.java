@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 logo,
                 "logo.jpg",
                 R.drawable.about);
+
         ((TextView) headerView.findViewById(R.id.header_email_text)).setText(Storage.getApplicationUser().getEmail());
     }
 
@@ -77,6 +78,14 @@ public class MainActivity extends AppCompatActivity {
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
+
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.navigate(R.id.accountInfoFragment);
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
