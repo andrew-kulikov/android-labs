@@ -12,3 +12,4 @@
 *keystore*
 *.zip
 .vs/
+*google-services*

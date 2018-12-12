@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.kek.labs.Fragment.HomeFragment"
+        android:label="home_fragment"
+        tools:layout="@layout/home_fragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_aboutFragment"
+            app:destination="@+id/aboutFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.kek.labs.Fragment.AboutFragment"
+        android:label="about_fragment"
+        tools:layout="@layout/about_fragment" />
+    <fragment
+        android:id="@+id/accountInfoFragment"
+        android:name="com.example.kek.labs.Fragment.AccountInfoFragment"
+        android:label="accont_info_fragment"
+        tools:layout="@layout/account_info_fragment" />
+    <fragment
+        android:id="@+id/accountEditFragment"
+        android:name="com.example.kek.labs.Fragment.AccountEditFragment"
+        android:label="account_edit_fragment"
+        tools:layout="@layout/account_edit_fragment" />
+</navigation>
