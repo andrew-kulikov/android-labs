@@ -1,6 +1,5 @@
 package com.example.kek.labs.Fragment;
 
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
@@ -25,8 +24,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -34,23 +31,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 public class LoginFragment extends Fragment {
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
+
     private View loginView;
     private UserLoginTask mAuthTask = null;
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
+    private AutoCompleteTextView emailView;
+    private EditText passwordView;
+    private View progressView;
+    private View loginFormView;
     private FirebaseAuth mAuth;
     private NavController navController;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        database = FirebaseDatabase.getInstance();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,10 +47,33 @@ public class LoginFragment extends Fragment {
         loginView = inflater.inflate(R.layout.fragment_login, container, false);
 
         setupNavController();
+        setupViews();
+        setupButtons();
+        setupAuth();
 
-        mEmailView = loginView.findViewById(R.id.email);
-        mPasswordView = loginView.findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        return loginView;
+    }
+
+    private void setupAuth() {
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null && !user.isAnonymous()) {
+            loginSuccess();
+        }
+    }
+
+    private void loginSuccess() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    private void setupViews() {
+        loginFormView = loginView.findViewById(R.id.login_form);
+        progressView = loginView.findViewById(R.id.login_progress);
+        emailView = loginView.findViewById(R.id.email);
+        passwordView = loginView.findViewById(R.id.password);
+        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -71,7 +83,9 @@ public class LoginFragment extends Fragment {
                 return false;
             }
         });
+    }
 
+    private void setupButtons() {
         Button mEmailSignInButton = loginView.findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,19 +101,6 @@ public class LoginFragment extends Fragment {
                 navController.navigate(R.id.registerFragment);
             }
         });
-
-        mLoginFormView = loginView.findViewById(R.id.login_form);
-        mProgressView = loginView.findViewById(R.id.login_progress);
-
-        mAuth = FirebaseAuth.getInstance();
-        /*FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null && !user.isAnonymous()) {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-        }*/
-
-        return loginView;
     }
 
     private void setupNavController() {
@@ -114,28 +115,28 @@ public class LoginFragment extends Fragment {
             return;
         }
 
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+        emailView.setError(null);
+        passwordView.setError(null);
 
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String email = emailView.getText().toString();
+        String password = passwordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            passwordView.setError(getString(R.string.error_invalid_password));
+            focusView = passwordView;
             cancel = true;
         }
 
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            emailView.setError(getString(R.string.error_field_required));
+            focusView = emailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            emailView.setError(getString(R.string.error_invalid_email));
+            focusView = emailView;
             cancel = true;
         }
 
@@ -161,53 +162,49 @@ public class LoginFragment extends Fragment {
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+        loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        loginFormView.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
 
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
                 show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
     }
 
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+        private final String email;
+        private final String password;
 
         UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+            this.email = email;
+            this.password = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            mAuth.signInWithEmailAndPassword(mEmail, mPassword)
+            mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                myRef = database.getReference("users");
-                                myRef.child(user.getUid()).setValue("Vasya Petrov");
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
-                                startActivity(intent);
-                                getActivity().finish();
+                                loginSuccess();
                             } else {
-                                Toast.makeText(getActivity(), "Authentication failed.",
+                                showProgress(false);
+                                Toast.makeText(getActivity(), getString(R.string.auth_fail),
                                         Toast.LENGTH_SHORT).show();
-                                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                                mPasswordView.requestFocus();
+                                passwordView.setError(getString(R.string.error_incorrect_password));
+                                passwordView.requestFocus();
                             }
 
                         }
