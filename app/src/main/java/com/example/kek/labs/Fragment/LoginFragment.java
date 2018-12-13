@@ -6,10 +6,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,7 +18,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.kek.labs.Activity.LoginActivity;
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,22 +28,27 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
 public class LoginFragment extends Fragment {
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
     private View loginView;
-    FirebaseDatabase database;
-    DatabaseReference myRef;
     private UserLoginTask mAuthTask = null;
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
+    private NavController navController;
 
     @Override
     public void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
     }
 
@@ -57,8 +57,9 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         loginView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        mEmailView = loginView.findViewById(R.id.email);
+        setupNavController();
 
+        mEmailView = loginView.findViewById(R.id.email);
         mPasswordView = loginView.findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -79,18 +80,33 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        Button registerButton = loginView.findViewById(R.id.open_register_button);
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.registerFragment);
+            }
+        });
+
         mLoginFormView = loginView.findViewById(R.id.login_form);
         mProgressView = loginView.findViewById(R.id.login_progress);
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        /*FirebaseUser user = mAuth.getCurrentUser();
         if (user != null && !user.isAnonymous()) {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
             getActivity().finish();
-        }
+        }*/
 
         return loginView;
+    }
+
+    private void setupNavController() {
+        NavHostFragment host = (NavHostFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        navController = host.getNavController();
     }
 
     private void attemptLogin() {
