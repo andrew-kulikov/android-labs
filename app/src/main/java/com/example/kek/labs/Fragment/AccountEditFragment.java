@@ -180,7 +180,6 @@ public class AccountEditFragment extends Fragment {
                 phone);
 
         try {
-            //Storage.setApplicationUser(user, "storage.json");
             userManager.saveUser(user);
             Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
         }

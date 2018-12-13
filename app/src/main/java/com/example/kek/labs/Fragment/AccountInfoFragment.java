@@ -7,12 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.kek.labs.Data.Storage;
-import com.example.kek.labs.Data.UserStorage;
+import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Util.UserUpdateListener;
 
 import androidx.annotation.NonNull;
@@ -24,7 +22,7 @@ import androidx.navigation.fragment.NavHostFragment;
 public class AccountInfoFragment extends Fragment {
     private View infoView;
     private NavController navController;
-    private  UserManager userManager;
+    private UserManager userManager;
 
     @Nullable
     @Override
@@ -70,24 +68,19 @@ public class AccountInfoFragment extends Fragment {
             @Override
             public void UpdateUser(User user) {
                 setText(R.id.info_email_textView,
-                        user.getEmail(),
-                        getString(R.string.email_default));
+                        user.getEmail());
                 setText(R.id.info_name_textView,
-                        user.getName(),
-                        getString(R.string.name_default));
+                        user.getName());
                 setText(R.id.info_surname_textView,
-                        user.getSurname(),
-                        getString(R.string.surname_default));
+                        user.getSurname());
                 setText(R.id.info_phone_textView,
-                        user.getPhone(),
-                        getString(R.string.phone_default));
+                        user.getPhone());
             }
         });
     }
 
-    private void setText(int viewId, String value, String defaultValue) {
-        String finalValue = value != null ? value : defaultValue;
-        ((TextView) infoView.findViewById(viewId)).setText(finalValue);
+    private void setText(int viewId, String value) {
+        ((TextView) infoView.findViewById(viewId)).setText(value);
     }
 
     @Override
