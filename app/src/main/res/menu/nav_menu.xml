@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/main_group">
         <item
-            android:id="@+id/homeFragment"
+            android:id="@+id/home_nav_item"
             android:title="@string/home" />
 
         <item
-            android:id="@+id/accountInfoFragment"
+            android:id="@+id/info_nav_item"
             android:title="@string/account" />
     </group>
 
     <group android:id="@+id/additional_group">
         <item
-            android:id="@+id/aboutFragment"
+            android:id="@+id/about_nav_item"
             android:title="@string/about" />
         <item
             android:id="@+id/logout_menu_item"

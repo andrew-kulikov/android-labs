@@ -9,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.kek.labs.Data.Storage;
-import com.example.kek.labs.Models.User;
-import com.example.kek.labs.R;
 import com.example.kek.labs.Managers.FileManager;
 import com.example.kek.labs.Managers.ImageManager;
+import com.example.kek.labs.Models.User;
+import com.example.kek.labs.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -94,12 +94,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
-                if (id == R.id.logout_menu_item) {
-                    FirebaseAuth.getInstance().signOut();
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
+                switch (id) {
+                    case R.id.logout_menu_item:
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    case R.id.home_nav_item:
+                        controller.navigate(R.id.homeFragment);
+                    case R.id.about_nav_item:
+                        controller.navigate(R.id.aboutFragment);
+                    case R.id.info_nav_item:
+                        controller.navigate(R.id.accountInfoFragment);
                 }
+                drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });

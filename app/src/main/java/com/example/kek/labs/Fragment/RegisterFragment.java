@@ -16,9 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
+import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
-import com.example.kek.labs.Managers.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -85,7 +85,9 @@ public class RegisterFragment extends Fragment {
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password) || !password.equals(confirmation)) {
+        if (TextUtils.isEmpty(password) ||
+                !TextUtils.isEmpty(password) && !isPasswordValid(password) ||
+                !password.equals(confirmation)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
