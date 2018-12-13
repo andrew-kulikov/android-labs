@@ -3,6 +3,7 @@ package com.example.kek.labs.Util;
 import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.example.kek.labs.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -15,6 +16,7 @@ public class UserManager {
     private Activity activity;
     private UserLoginTask loginTask;
     private UserRegisterTask registerTask;
+    private User user;
 
     public UserManager(Activity activity) {
         this.activity = activity;
@@ -24,6 +26,11 @@ public class UserManager {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         return user != null && !user.isAnonymous();
+    }
+
+    public User getUser() {
+        if (user != null) return user;
+        return null;
     }
 
     public void register(String email, String password, AuthEventListener listener) {

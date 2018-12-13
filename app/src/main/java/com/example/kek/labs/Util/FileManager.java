@@ -78,7 +78,7 @@ public class FileManager {
             String surname = json.getString("surname");
             String phone = json.getString("phone");
 
-            user = new User(email, name, surname, phone);
+            user = new User(email, name, surname, phone, "1");
         } catch (JSONException e) {
             e.printStackTrace();
         }
