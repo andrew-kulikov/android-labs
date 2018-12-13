@@ -89,7 +89,7 @@ public class LoginFragment extends Fragment {
             startActivity(intent);
             getActivity().finish();
         }
-        
+
         return loginView;
     }
 
