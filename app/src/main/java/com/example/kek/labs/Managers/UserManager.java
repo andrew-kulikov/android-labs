@@ -49,6 +49,10 @@ public class UserManager {
         } else listener.UpdateUser(user);
     }
 
+    public void saveUser(User user) {
+        UserStorage.saveUser(FirebaseAuth.getInstance().getUid(), user);
+    }
+
     public void register(User user, String password, AuthEventListener listener) {
         registerTask = new UserRegisterTask(user, password, listener);
         registerTask.execute((Void) null);

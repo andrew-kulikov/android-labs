@@ -16,10 +16,12 @@ import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.Data.Storage;
+import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.PermissionManager;
+import com.example.kek.labs.Util.UserUpdateListener;
 import com.example.kek.labs.Util.Validator;
 
 import androidx.annotation.NonNull;
@@ -36,11 +38,14 @@ public class AccountEditFragment extends Fragment {
     private ImageView logo;
     private PermissionManager permissionManager;
     private ImageManager imageManager;
+    private UserManager userManager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         editView = inflater.inflate(R.layout.account_edit_fragment, container, false);
+
+        userManager = UserManager.getInstance(getActivity());
 
         setEditLogoClick();
         setSaveClick();
@@ -86,21 +91,23 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void setupTextViews() {
-        User user = Storage.getApplicationUser();
-        if (user == null) return;
-
-        setText(R.id.info_email_textEdit,
-                user.getEmail(),
-                getString(R.string.email_default));
-        setText(R.id.info_name_textEdit,
-                user.getName(),
-                getString(R.string.name_default));
-        setText(R.id.info_surname_textEdit,
-                user.getSurname(),
-                getString(R.string.surname_default));
-        setText(R.id.info_phone_textEdit,
-                user.getPhone(),
-                getString(R.string.phone_default));
+        userManager.getUser(new UserUpdateListener() {
+            @Override
+            public void UpdateUser(User user) {
+                setText(R.id.info_email_textEdit,
+                        user.getEmail(),
+                        getString(R.string.email_default));
+                setText(R.id.info_name_textEdit,
+                        user.getName(),
+                        getString(R.string.name_default));
+                setText(R.id.info_surname_textEdit,
+                        user.getSurname(),
+                        getString(R.string.surname_default));
+                setText(R.id.info_phone_textEdit,
+                        user.getPhone(),
+                        getString(R.string.phone_default));
+            }
+        });
     }
 
     private void setText(int viewId, String value, String defaultValue) {
@@ -173,7 +180,8 @@ public class AccountEditFragment extends Fragment {
                 phone);
 
         try {
-            Storage.setApplicationUser(user, "storage.json");
+            //Storage.setApplicationUser(user, "storage.json");
+            userManager.saveUser(user);
             Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
         }
         catch (Exception e) {
