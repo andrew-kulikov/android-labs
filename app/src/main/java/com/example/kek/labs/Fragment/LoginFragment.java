@@ -3,7 +3,6 @@ package com.example.kek.labs.Fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -19,13 +18,11 @@ import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.example.kek.labs.Util.AuthEventListener;
+import com.example.kek.labs.Util.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -33,13 +30,14 @@ import androidx.navigation.fragment.NavHostFragment;
 public class LoginFragment extends Fragment {
 
     private View loginView;
-    private UserLoginTask mAuthTask = null;
+    //private UserLoginTask mAuthTask = null;
     private AutoCompleteTextView emailView;
     private EditText passwordView;
     private View progressView;
     private View loginFormView;
     private FirebaseAuth mAuth;
     private NavController navController;
+    private UserManager userManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +48,8 @@ public class LoginFragment extends Fragment {
         setupViews();
         setupButtons();
         setupAuth();
+
+        userManager = new UserManager(getActivity());
 
         return loginView;
     }
@@ -111,7 +111,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void attemptLogin() {
-        if (mAuthTask != null) {
+        if (userManager.isProcessing()) {
             return;
         }
 
@@ -144,8 +144,22 @@ public class LoginFragment extends Fragment {
             focusView.requestFocus();
         } else {
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            userManager.login(email, password, new AuthEventListener() {
+                @Override
+                public void onAuthSuccess() {
+                    loginSuccess();
+                }
+
+                @Override
+                public void onAuthFail() {
+                    loginFail();
+                }
+
+                @Override
+                public void onCancel() {
+                    loginCancel();
+                }
+            });
         }
     }
 
@@ -181,43 +195,15 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String email;
-        private final String password;
-
-        UserLoginTask(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                loginSuccess();
-                            } else {
-                                showProgress(false);
-                                Toast.makeText(getActivity(), getString(R.string.auth_fail),
-                                        Toast.LENGTH_SHORT).show();
-                                passwordView.setError(getString(R.string.error_incorrect_password));
-                                passwordView.requestFocus();
-                            }
-
-                        }
-                    });
-
-            return true;
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
+    private void loginFail() {
+        showProgress(false);
+        Toast.makeText(getActivity(), getString(R.string.auth_fail),
+                Toast.LENGTH_SHORT).show();
+        passwordView.setError(getString(R.string.error_incorrect_password));
+        passwordView.requestFocus();
     }
 
+    private void loginCancel() {
+        showProgress(false);
+    }
 }
