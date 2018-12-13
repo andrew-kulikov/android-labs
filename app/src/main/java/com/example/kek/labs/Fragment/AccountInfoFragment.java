@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.example.kek.labs.Data.Storage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.ImageManager;
+import com.example.kek.labs.Managers.ImageManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

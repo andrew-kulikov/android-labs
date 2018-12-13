@@ -1,4 +1,4 @@
-package com.example.kek.labs.Util;
+package com.example.kek.labs.Managers;
 
 import android.app.Activity;
 import android.content.DialogInterface;

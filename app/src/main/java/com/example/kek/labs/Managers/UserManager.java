@@ -1,9 +1,10 @@
-package com.example.kek.labs.Util;
+package com.example.kek.labs.Managers;
 
 import android.app.Activity;
 import android.os.AsyncTask;
 
 import com.example.kek.labs.Models.User;
+import com.example.kek.labs.Util.AuthEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

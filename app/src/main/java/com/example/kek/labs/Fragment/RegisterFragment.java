@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
-import com.example.kek.labs.Util.UserManager;
+import com.example.kek.labs.Managers.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;

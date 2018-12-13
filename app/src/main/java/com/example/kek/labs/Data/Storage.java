@@ -1,7 +1,7 @@
 package com.example.kek.labs.Data;
 
 import com.example.kek.labs.Models.User;
-import com.example.kek.labs.Util.FileManager;
+import com.example.kek.labs.Managers.FileManager;
 
 public final class Storage {
     private static User applicationUser;

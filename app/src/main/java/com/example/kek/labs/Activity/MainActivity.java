@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.example.kek.labs.Data.Storage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.FileManager;
-import com.example.kek.labs.Util.ImageManager;
+import com.example.kek.labs.Managers.FileManager;
+import com.example.kek.labs.Managers.ImageManager;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 

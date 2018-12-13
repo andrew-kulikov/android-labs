@@ -1,4 +1,4 @@
-package com.example.kek.labs.Util;
+package com.example.kek.labs.Managers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.MyApplication;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.GlideApp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
