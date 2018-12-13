@@ -3,6 +3,7 @@ package com.example.kek.labs.Managers;
 import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.example.kek.labs.Data.UserStorage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.Util.AuthEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,8 +35,8 @@ public class UserManager {
         return null;
     }
 
-    public void register(String email, String password, AuthEventListener listener) {
-        registerTask = new UserRegisterTask(email, password, listener);
+    public void register(User user, String password, AuthEventListener listener) {
+        registerTask = new UserRegisterTask(user, password, listener);
         registerTask.execute((Void) null);
     }
 
@@ -89,24 +90,25 @@ public class UserManager {
 
     public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String email;
+        private final User user;
         private final String password;
         private AuthEventListener listener;
 
-        UserRegisterTask(String email, String password, AuthEventListener listener) {
-            this.email = email;
+        UserRegisterTask(User user, String password, AuthEventListener listener) {
+            this.user = user;
             this.password = password;
             this.listener = listener;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(user.getEmail(), password)
                     .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                // create db fields
+                                FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
+                                UserStorage.saveUser(curUser.getUid(), user);
                                 listener.onAuthSuccess();
                             } else
                                 listener.onAuthFail();

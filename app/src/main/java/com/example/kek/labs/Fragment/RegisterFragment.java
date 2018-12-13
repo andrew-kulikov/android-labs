@@ -17,12 +17,15 @@ import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.Managers.UserManager;
+import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import androidx.fragment.app.Fragment;
 
@@ -107,7 +110,9 @@ public class RegisterFragment extends Fragment {
             focusView.requestFocus();
         } else {
             showProgress(true);
-            userManager.register(email, password, new AuthEventListener() {
+
+            User user = getModelFromViews();
+            userManager.register(user, password, new AuthEventListener() {
                 @Override
                 public void onAuthSuccess() {
                     registerSuccess();
@@ -124,6 +129,19 @@ public class RegisterFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private User getModelFromViews() {
+        String name = getViewText(R.id.register_name_edit);
+        String surname = getViewText(R.id.register_surname_edit);
+        String phone = getViewText(R.id.register_phone_edit);
+        String email = getViewText(R.id.register_email_edit);
+
+        return new User(email, name, surname, phone);
+    }
+
+    private String getViewText(int id) {
+        return ((TextView)registerView.findViewById(id)).getText().toString();
     }
 
     private boolean isEmailValid(String email) {
