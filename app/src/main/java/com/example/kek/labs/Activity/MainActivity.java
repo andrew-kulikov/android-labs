@@ -1,5 +1,6 @@
 package com.example.kek.labs.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +14,9 @@ import com.example.kek.labs.R;
 import com.example.kek.labs.Util.FileManager;
 import com.example.kek.labs.Util.ImageManager;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -84,6 +87,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 controller.navigate(R.id.accountInfoFragment);
                 drawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.logout_menu_item) {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                return true;
             }
         });
 
