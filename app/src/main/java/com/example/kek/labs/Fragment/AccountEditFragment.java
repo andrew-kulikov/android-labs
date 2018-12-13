@@ -170,8 +170,7 @@ public class AccountEditFragment extends Fragment {
                 email,
                 getViewText(R.id.info_name_textEdit),
                 getViewText(R.id.info_surname_textEdit),
-                phone,
-                "1");
+                phone);
 
         try {
             Storage.setApplicationUser(user, "storage.json");
