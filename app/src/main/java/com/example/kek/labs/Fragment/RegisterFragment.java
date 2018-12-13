@@ -53,7 +53,7 @@ public class RegisterFragment extends Fragment {
                              Bundle savedInstanceState) {
         registerView = inflater.inflate(R.layout.fragment_register, container, false);
 
-        userManager = new UserManager(getActivity());
+        userManager = UserManager.getInstance(getActivity());
 
         mEmailView = registerView.findViewById(R.id.register_email_edit);
         mPasswordView = registerView.findViewById(R.id.register_password_edit);

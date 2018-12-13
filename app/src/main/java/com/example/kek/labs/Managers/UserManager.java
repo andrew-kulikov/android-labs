@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.example.kek.labs.Data.UserStorage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.Util.AuthEventListener;
+import com.example.kek.labs.Util.UserUpdateListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -15,13 +16,18 @@ import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
 
 public class UserManager {
+    private static final UserManager instance = new UserManager();
+
     private Activity activity;
     private UserLoginTask loginTask;
     private UserRegisterTask registerTask;
     private User user;
 
-    public UserManager(Activity activity) {
-        this.activity = activity;
+    private UserManager() {}
+
+    public static UserManager getInstance(Activity activity) {
+        instance.activity = activity;
+        return instance;
     }
 
     public boolean isUserLogged() {
@@ -30,9 +36,17 @@ public class UserManager {
         return user != null && !user.isAnonymous();
     }
 
-    public User getUser() {
-        if (user != null) return user;
-        return null;
+    public void getUser(final UserUpdateListener listener) {
+
+        if (user == null) {
+            UserStorage.getUser(FirebaseAuth.getInstance().getUid(), new UserUpdateListener() {
+                @Override
+                public void UpdateUser(User _user) {
+                    user = _user;
+                    listener.UpdateUser(user);
+                }
+            });
+        } else listener.UpdateUser(user);
     }
 
     public void register(User user, String password, AuthEventListener listener) {

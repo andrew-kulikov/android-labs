@@ -100,12 +100,16 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
+                        break;
                     case R.id.home_nav_item:
                         controller.navigate(R.id.homeFragment);
+                        break;
                     case R.id.about_nav_item:
                         controller.navigate(R.id.aboutFragment);
+                        break;
                     case R.id.info_nav_item:
                         controller.navigate(R.id.accountInfoFragment);
+                        break;
                 }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;

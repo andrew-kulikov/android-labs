@@ -40,7 +40,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         loginView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        userManager = new UserManager(getActivity());
+        userManager = UserManager.getInstance(getActivity());
 
         setupNavController();
         setupViews();

@@ -8,9 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.kek.labs.Data.Storage;
+import com.example.kek.labs.Data.UserStorage;
+import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Managers.ImageManager;
+import com.example.kek.labs.Util.UserUpdateListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,11 +24,14 @@ import androidx.navigation.fragment.NavHostFragment;
 public class AccountInfoFragment extends Fragment {
     private View infoView;
     private NavController navController;
+    private  UserManager userManager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         infoView = inflater.inflate(R.layout.account_info_fragment, container, false);
+
+        userManager = UserManager.getInstance(getActivity());
 
         setupLogo();
         setupNavController();
@@ -60,21 +66,23 @@ public class AccountInfoFragment extends Fragment {
     }
 
     private void setupTextViews() {
-        User user = Storage.getApplicationUser();
-        if (user == null) return;
-
-        setText(R.id.info_email_textView,
-                user.getEmail(),
-                getString(R.string.email_default));
-        setText(R.id.info_name_textView,
-                user.getName(),
-                getString(R.string.name_default));
-        setText(R.id.info_surname_textView,
-                user.getSurname(),
-                getString(R.string.surname_default));
-        setText(R.id.info_phone_textView,
-                user.getPhone(),
-                getString(R.string.phone_default));
+        userManager.getUser(new UserUpdateListener() {
+            @Override
+            public void UpdateUser(User user) {
+                setText(R.id.info_email_textView,
+                        user.getEmail(),
+                        getString(R.string.email_default));
+                setText(R.id.info_name_textView,
+                        user.getName(),
+                        getString(R.string.name_default));
+                setText(R.id.info_surname_textView,
+                        user.getSurname(),
+                        getString(R.string.surname_default));
+                setText(R.id.info_phone_textView,
+                        user.getPhone(),
+                        getString(R.string.phone_default));
+            }
+        });
     }
 
     private void setText(int viewId, String value, String defaultValue) {
