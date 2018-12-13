@@ -20,8 +20,6 @@ import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
 import com.example.kek.labs.Util.UserManager;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -30,12 +28,10 @@ import androidx.navigation.fragment.NavHostFragment;
 public class LoginFragment extends Fragment {
 
     private View loginView;
-    //private UserLoginTask mAuthTask = null;
     private AutoCompleteTextView emailView;
     private EditText passwordView;
     private View progressView;
     private View loginFormView;
-    private FirebaseAuth mAuth;
     private NavController navController;
     private UserManager userManager;
 
@@ -44,20 +40,18 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         loginView = inflater.inflate(R.layout.fragment_login, container, false);
 
+        userManager = new UserManager(getActivity());
+
         setupNavController();
         setupViews();
         setupButtons();
         setupAuth();
 
-        userManager = new UserManager(getActivity());
-
         return loginView;
     }
 
     private void setupAuth() {
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null && !user.isAnonymous()) {
+        if (userManager.isUserLogged()) {
             loginSuccess();
         }
     }
@@ -111,7 +105,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void attemptLogin() {
-        if (userManager.isProcessing()) {
+        if (userManager.isLoginProcessing()) {
             return;
         }
 
