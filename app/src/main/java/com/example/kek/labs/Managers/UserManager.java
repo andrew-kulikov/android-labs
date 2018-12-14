@@ -40,8 +40,7 @@ public class UserManager {
     }
 
     public void getUser(final UserUpdateListener listener) {
-
-        if (user == null) {
+        if (user == null || !FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user.getEmail())) {
             UserStorage.getUser(FirebaseAuth.getInstance().getUid(), new UserUpdateListener() {
                 @Override
                 public void onUpdateUser(User _user) {

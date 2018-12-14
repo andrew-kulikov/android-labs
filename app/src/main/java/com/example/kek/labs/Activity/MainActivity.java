@@ -46,6 +46,13 @@ public class MainActivity extends AppCompatActivity {
         setupNavigationDrawer();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        userManager = UserManager.getInstance(this);
+    }
+
     private void setupNavController() {
         NavHostFragment host = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         controller = host.getNavController();
