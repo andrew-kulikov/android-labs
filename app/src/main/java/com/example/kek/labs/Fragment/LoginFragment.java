@@ -20,6 +20,7 @@ import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
 import com.example.kek.labs.Managers.UserManager;
+import com.example.kek.labs.Util.Validator;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -117,7 +118,7 @@ public class LoginFragment extends Fragment {
 
         View focusView = null;
 
-        if (TextUtils.isEmpty(password) || !TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || !TextUtils.isEmpty(password) && !Validator.isValidPassword(password)) {
             passwordView.setError(getString(R.string.error_invalid_password));
             focusView = passwordView;
         }
@@ -125,7 +126,7 @@ public class LoginFragment extends Fragment {
         if (TextUtils.isEmpty(email)) {
             emailView.setError(getString(R.string.error_field_required));
             focusView = emailView;
-        } else if (!isEmailValid(email)) {
+        } else if (! Validator.isValidEmail(email)) {
             emailView.setError(getString(R.string.error_invalid_email));
             focusView = emailView;
         }
@@ -151,16 +152,6 @@ public class LoginFragment extends Fragment {
                 }
             });
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     private void showProgress(final boolean show) {
