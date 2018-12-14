@@ -20,33 +20,20 @@ import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.w3c.dom.Text;
+import com.example.kek.labs.Util.Validator;
 
 import androidx.fragment.app.Fragment;
 
 
 public class RegisterFragment extends Fragment {
-    FirebaseDatabase database;
-    DatabaseReference myRef;
     private View registerView;
     private UserManager userManager;
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
-    private FirebaseAuth mAuth;
+    private AutoCompleteTextView emailView;
+    private EditText passwordView;
+    private EditText confirmPasswordView;
+    private View progressView;
+    private View loginFormView;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        database = FirebaseDatabase.getInstance();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,8 +42,9 @@ public class RegisterFragment extends Fragment {
 
         userManager = UserManager.getInstance(getActivity());
 
-        mEmailView = registerView.findViewById(R.id.register_email_edit);
-        mPasswordView = registerView.findViewById(R.id.register_password_edit);
+        emailView = registerView.findViewById(R.id.register_email_edit);
+        passwordView = registerView.findViewById(R.id.register_password_edit);
+        confirmPasswordView = registerView.findViewById(R.id.register_repeat_password_edit);
 
         Button signUpButton = registerView.findViewById(R.id.sign_up_button);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -66,9 +54,8 @@ public class RegisterFragment extends Fragment {
             }
         });
 
-        mLoginFormView = registerView.findViewById(R.id.register_form);
-        mProgressView = registerView.findViewById(R.id.register_progress);
-        mAuth = FirebaseAuth.getInstance();
+        loginFormView = registerView.findViewById(R.id.register_form);
+        progressView = registerView.findViewById(R.id.register_progress);
 
         return registerView;
     }
@@ -78,31 +65,38 @@ public class RegisterFragment extends Fragment {
             return;
         }
 
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+        emailView.setError(null);
+        passwordView.setError(null);
 
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String email = emailView.getText().toString();
+        String password = passwordView.getText().toString();
         String confirmation = ((TextView) registerView.findViewById(R.id.register_repeat_password_edit)).getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         if (TextUtils.isEmpty(password) ||
-                !TextUtils.isEmpty(password) && !isPasswordValid(password) ||
+                !TextUtils.isEmpty(password) && !Validator.isValidPassword(password)) {
+            passwordView.setError(getString(R.string.error_invalid_password));
+            focusView = passwordView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(confirmation) ||
+                !TextUtils.isEmpty(confirmation) && !Validator.isValidPassword(confirmation) ||
                 !password.equals(confirmation)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            confirmPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = passwordView;
             cancel = true;
         }
 
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            emailView.setError(getString(R.string.error_field_required));
+            focusView = emailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!Validator.isValidEmail(email)) {
+            emailView.setError(getString(R.string.error_invalid_email));
+            focusView = emailView;
             cancel = true;
         }
 
@@ -144,42 +138,29 @@ public class RegisterFragment extends Fragment {
         return ((TextView)registerView.findViewById(id)).getText().toString();
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
-    }
-
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+        loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        loginFormView.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
 
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
                 show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
     }
 
     private void registerSuccess() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        myRef = database.getReference("users");
-        myRef.child(user.getUid()).child("name").setValue(((TextView) registerView.findViewById(R.id.register_name_edit)).getText().toString());
         Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
         getActivity().finish();
@@ -189,8 +170,8 @@ public class RegisterFragment extends Fragment {
         showProgress(false);
         Toast.makeText(getActivity(), "Authentication failed.",
                 Toast.LENGTH_SHORT).show();
-        mPasswordView.setError(getString(R.string.error_incorrect_password));
-        mPasswordView.requestFocus();
+        passwordView.setError(getString(R.string.error_incorrect_password));
+        passwordView.requestFocus();
     }
 
     private void registerCancel() {
