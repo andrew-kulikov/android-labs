@@ -1,5 +1,7 @@
 package com.example.kek.labs.Fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.SaveImageListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 
 import androidx.annotation.NonNull;
@@ -24,6 +27,8 @@ public class AccountInfoFragment extends Fragment {
     private View infoView;
     private NavController navController;
     private UserManager userManager;
+    private View infoFormView;
+    private View progressView;
 
     @Nullable
     @Override
@@ -32,6 +37,7 @@ public class AccountInfoFragment extends Fragment {
 
         userManager = UserManager.getInstance(getActivity());
 
+        setupViews();
         setupLogo();
         setupNavController();
         setEditButtonClick();
@@ -40,11 +46,45 @@ public class AccountInfoFragment extends Fragment {
         return infoView;
     }
 
+    private void setupViews() {
+        infoFormView = infoView.findViewById(R.id.account_info_form);
+        progressView = infoView.findViewById(R.id.image_progress);
+    }
+
+    private void showProgress(final boolean show) {
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        infoFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        infoFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                infoFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
+    }
+
     private void setupLogo() {
+        showProgress(true);
         ImageView logo = infoView.findViewById(R.id.accountLogo);
         ImageManager imageManager = new ImageManager();
-        imageManager.LoadAvatar(logo,
-                R.drawable.about);
+
+        SaveImageListener listener = new SaveImageListener() {
+            @Override
+            public void onImageDownloadFinished() {
+                showProgress(false);
+            }
+        };
+        imageManager.LoadAvatar(logo, R.drawable.about, listener);
     }
 
     private void setupNavController() {

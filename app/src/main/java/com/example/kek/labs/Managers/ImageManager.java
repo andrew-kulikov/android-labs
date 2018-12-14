@@ -15,6 +15,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.MyApplication;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.GlideApp;
+import com.example.kek.labs.Util.SaveImageListener;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,7 +85,7 @@ public class ImageManager {
                 + "/Files";
     }
 
-    public void LoadImage(ImageView to, String path, int alternative) {
+    private void LoadImage(ImageView to, String path, int alternative, SaveImageListener listener) {
         path = getFilesDirectoryPath() + File.separator + path;
 
         if (new File(path).exists()) {
@@ -92,15 +95,15 @@ public class ImageManager {
                     .skipMemoryCache(true)
                     .error(alternative)
                     .into(to);
-        } else loadFromStorage(alternative, to);
+        } else loadFromStorage(alternative, to, listener);
     }
 
-    public void LoadAvatar(ImageView logo, int about) {
+    public void LoadAvatar(ImageView logo, int about, SaveImageListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
         String path = getAvatarPath();
-        LoadImage(logo, path, about);
+        LoadImage(logo, path, about, listener);
     }
 
     private File getOutputMediaFile() {
@@ -113,12 +116,11 @@ public class ImageManager {
         return new File(getAvatarPath());
     }
 
-    public void storeImage(Bitmap image) {
-        saveToStorage();
+    public void storeImage(Bitmap image, SaveImageListener listener) {
+        saveToStorage(listener);
         File pictureFile = getOutputMediaFile();
-        if (pictureFile == null) {
-            return;
-        }
+        if (pictureFile == null) return;
+
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile, false);
             image.compress(Bitmap.CompressFormat.PNG, 80, fos);
@@ -137,17 +139,32 @@ public class ImageManager {
         return getFilesDirectoryPath() + File.separator + user.getUid() + ".jpg";
     }
 
-    private void saveToStorage() {
+    private void saveToStorage(final SaveImageListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
         Uri file = Uri.fromFile(new File(getAvatarPath()));
         StorageReference riversRef = storageRef.child("users/" + user.getUid() + "/images/avatar.jpg");
 
-        riversRef.putFile(file);
+        riversRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                listener.onImageDownloadFinished();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onImageDownloadFinished();
+            }
+        }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
+                listener.onImageDownloadFinished();
+            }
+        });
     }
 
-    private void loadFromStorage(final int alternative, final ImageView to) {
+    private void loadFromStorage(final int alternative, final ImageView to, final SaveImageListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
@@ -165,6 +182,7 @@ public class ImageManager {
                                 .skipMemoryCache(true)
                                 .error(alternative)
                                 .into(to);
+                        listener.onImageDownloadFinished();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -174,6 +192,12 @@ public class ImageManager {
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
                         .into(to);
+                listener.onImageDownloadFinished();
+            }
+        }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
+                listener.onImageDownloadFinished();
             }
         });
     }

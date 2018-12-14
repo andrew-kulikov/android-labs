@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.example.kek.labs.Managers.PermissionManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.SaveImageListener;
 import com.example.kek.labs.Util.UserSaveListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.example.kek.labs.Util.Validator;
@@ -85,9 +87,14 @@ public class AccountEditFragment extends Fragment {
     private void setupLogo() {
         logo = editView.findViewById(R.id.accountLogo);
         imageManager = new ImageManager();
-        imageManager.LoadAvatar(
-                logo,
-                R.drawable.about);
+
+        SaveImageListener listener = new SaveImageListener() {
+            @Override
+            public void onImageDownloadFinished() {
+
+            }
+        };
+        imageManager.LoadAvatar(logo, R.drawable.about, listener);
     }
 
     private void setupTextViews(Bundle savedInstanceState) {
@@ -136,6 +143,13 @@ public class AccountEditFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK)
             return;
+
+        SaveImageListener imageListener = new SaveImageListener() {
+            @Override
+            public void onImageDownloadFinished() {
+                Log.d("Images save", "ok");
+            }
+        };
         switch (requestCode) {
             case REQUEST_LOAD_IMAGE: {
                 Uri imageUri = data.getData();
@@ -143,13 +157,13 @@ public class AccountEditFragment extends Fragment {
                 if (imageUri != null) {
                     logo.setImageURI(imageUri);
                     Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
-                    imageManager.storeImage(bmp);
+                    imageManager.storeImage(bmp, imageListener);
                 } else {
                     Bundle extras = data.getExtras();
                     if (extras == null) break;
                     Bitmap takenPhoto = (Bitmap) extras.get("data");
                     logo.setImageBitmap(takenPhoto);
-                    imageManager.storeImage(takenPhoto);
+                    imageManager.storeImage(takenPhoto, imageListener);
                 }
                 break;
             }
@@ -158,7 +172,7 @@ public class AccountEditFragment extends Fragment {
                 if (extras == null) break;
                 Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
                 logo.setImageBitmap(takenPhoto);
-                imageManager.storeImage(takenPhoto);
+                imageManager.storeImage(takenPhoto, imageListener);
             }
         }
         MainActivity mainActivity = (MainActivity) getActivity();

@@ -175,16 +175,14 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerFail() {
-        showProgress(false);
         Toast.makeText(getActivity(), "Authentication failed.",
                 Toast.LENGTH_SHORT).show();
         passwordView.setError(getString(R.string.error_incorrect_password));
         passwordView.requestFocus();
+        showProgress(false);
     }
 
     private void registerCancel() {
         showProgress(false);
     }
-
-
 }

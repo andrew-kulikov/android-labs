@@ -14,6 +14,7 @@ import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.SaveImageListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -65,9 +66,14 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navView = findViewById(R.id.nav_view);
         final View headerView = navView.getHeaderView(0);
         ImageView logo = headerView.findViewById(R.id.accountLogo);
-        new ImageManager().LoadAvatar(
-                logo,
-                R.drawable.about);
+
+        SaveImageListener listener = new SaveImageListener() {
+            @Override
+            public void onImageDownloadFinished() {
+
+            }
+        };
+        new ImageManager().LoadAvatar(logo, R.drawable.about, listener);
 
         userManager.getUser(new UserUpdateListener() {
             @Override
