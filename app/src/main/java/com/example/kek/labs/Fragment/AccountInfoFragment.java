@@ -43,8 +43,7 @@ public class AccountInfoFragment extends Fragment {
     private void setupLogo() {
         ImageView logo = infoView.findViewById(R.id.accountLogo);
         ImageManager imageManager = new ImageManager();
-        imageManager.LoadImage(logo,
-                "logo.jpg",
+        imageManager.LoadAvatar(logo,
                 R.drawable.about);
     }
 

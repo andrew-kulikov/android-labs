@@ -65,9 +65,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navView = findViewById(R.id.nav_view);
         final View headerView = navView.getHeaderView(0);
         ImageView logo = headerView.findViewById(R.id.accountLogo);
-        new ImageManager().LoadImage(
+        new ImageManager().LoadAvatar(
                 logo,
-                "logo.jpg",
                 R.drawable.about);
 
         userManager.getUser(new UserUpdateListener() {

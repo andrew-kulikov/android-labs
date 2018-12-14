@@ -95,6 +95,14 @@ public class ImageManager {
         } else loadFromStorage(alternative, to);
     }
 
+    public void LoadAvatar(ImageView logo, int about) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        String path = getAvatarPath();
+        LoadImage(logo, path, about);
+    }
+
     private File getOutputMediaFile() {
         File mediaStorageDir = new File(getFilesDirectoryPath());
 
@@ -125,11 +133,18 @@ public class ImageManager {
         }
     }
 
+    private String getAvatarPath() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return "";
+
+        return getFilesDirectoryPath() + File.separator + user.getUid();
+    }
+
     private void saveToStorage() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        Uri file = Uri.fromFile(new File(getFilesDirectoryPath() + File.separator + user.getUid()));
+        Uri file = Uri.fromFile(new File(getAvatarPath()));
         StorageReference riversRef = storageRef.child("users/" + user.getUid() + "/images/avatar.jpg");
 
         riversRef.putFile(file);
@@ -139,7 +154,7 @@ public class ImageManager {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        final String path = getFilesDirectoryPath() + File.separator + user.getUid();
+        final String path = getAvatarPath();
         File localFile = new File(path);
 
         StorageReference avatarRef = storageRef.child("users/" + user.getUid() + "/images/avatar.jpg");
@@ -165,4 +180,6 @@ public class ImageManager {
             }
         });
     }
+
+
 }
