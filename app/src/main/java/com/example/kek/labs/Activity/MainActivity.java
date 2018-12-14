@@ -1,13 +1,17 @@
 package com.example.kek.labs.Activity;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.kek.labs.Fragment.AccountEditFragment;
 import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
@@ -19,19 +23,23 @@ import com.google.firebase.auth.FirebaseAuth;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NavController controller;
+    private NavController navController;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private UserManager userManager;
+    private NavHostFragment navHostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupNavController() {
-        NavHostFragment host = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        controller = host.getNavController();
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        navController = navHostFragment.getNavController();
     }
 
     public void refreshHeader() {
@@ -81,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         refreshHeader();
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationUI.setupWithNavController(navView, controller);
+        NavigationUI.setupWithNavController(navView, navController);
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
@@ -89,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controller.navigate(R.id.accountInfoFragment);
+                navController.navigate(R.id.accountInfoFragment);
                 drawerLayout.closeDrawer(GravityCompat.START);
             }
         });
@@ -98,29 +106,54 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
-                switch (id) {
-                    case R.id.logout_menu_item:
-                        FirebaseAuth.getInstance().signOut();
-                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                        break;
-                    case R.id.home_nav_item:
-                        controller.navigate(R.id.homeFragment);
-                        break;
-                    case R.id.about_nav_item:
-                        controller.navigate(R.id.aboutFragment);
-                        break;
-                    case R.id.info_nav_item:
-                        controller.navigate(R.id.accountInfoFragment);
-                        break;
+                Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+                if (currentFragment instanceof AccountEditFragment) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    showNavigateDialog(id);
                 }
-                drawerLayout.closeDrawer(GravityCompat.START);
+                else {
+                    MainActivity.this.onNavigationItemSelected(id);
+                }
                 return true;
             }
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void showNavigateDialog(final int id) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle(getString(R.string.navigation_confirmation_header));
+        alertBuilder.setMessage(getString(R.string.navigation_confirmation_content));
+        alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                MainActivity.this.onNavigationItemSelected(id);
+            }
+        });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+    }
+
+    private void onNavigationItemSelected(int id) {
+        switch (id) {
+            case R.id.logout_menu_item:
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.home_nav_item:
+                navController.navigate(R.id.homeFragment);
+                break;
+            case R.id.about_nav_item:
+                navController.navigate(R.id.aboutFragment);
+                break;
+            case R.id.info_nav_item:
+                navController.navigate(R.id.accountInfoFragment);
+                break;
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -143,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.about_item:
-                controller.navigate(R.id.aboutFragment);
+                navController.navigate(R.id.aboutFragment);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case android.R.id.home:

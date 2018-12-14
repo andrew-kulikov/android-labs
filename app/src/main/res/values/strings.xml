@@ -39,4 +39,6 @@
     <string name="register_button_text">Register</string>
     <string name="auth_fail">Authentication failed.</string>
     <string name="logout">Logout</string>
+    <string name="navigation_confirmation_header">Are you sure to close editing?</string>
+    <string name="navigation_confirmation_content">You can lose unsaved data</string>
 </resources>
