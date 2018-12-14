@@ -2,11 +2,7 @@ package com.example.kek.labs.Managers;
 
 import android.os.Environment;
 
-import com.example.kek.labs.Models.User;
 import com.example.kek.labs.MyApplication;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,40 +51,5 @@ public class FileManager {
         String path = getDirectoryPath() + File.separator + fileName;
         File file = new File(path);
         return file.exists();
-    }
-
-    public User getUser(String fileName) {
-        if (!isFilePresent("storage.json")) return null;
-
-        User user = null;
-        String data = read("storage.json");
-        try {
-            JSONObject json = new JSONObject(data);
-
-            String email = json.getString("email");
-            String name = json.getString("name");
-            String surname = json.getString("surname");
-            String phone = json.getString("phone");
-
-            user = new User(email, name, surname, phone);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return user;
-    }
-
-    public void saveUser(User user, String fileName) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("email", user.getEmail());
-            json.put("name", user.getName());
-            json.put("surname", user.getSurname());
-            json.put("phone", user.getPhone());
-
-            create(fileName, json.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }
