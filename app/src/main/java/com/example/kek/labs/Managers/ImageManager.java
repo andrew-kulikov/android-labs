@@ -18,9 +18,9 @@ import com.example.kek.labs.Util.GlideApp;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,12 +82,16 @@ public class ImageManager {
     }
 
     public void LoadImage(ImageView to, String path, int alternative) {
-        GlideApp.with(context)
-                .load(getFilesDirectoryPath() + File.separator + path)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(alternative)
-                .into(to);
+        path = getFilesDirectoryPath() + File.separator + path;
+
+        if (new File(path).exists()) {
+            GlideApp.with(context)
+                    .load(path)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .error(alternative)
+                    .into(to);
+        } else loadFromStorage(alternative, to);
     }
 
     private File getOutputMediaFile() {
@@ -124,21 +128,30 @@ public class ImageManager {
         Uri file = Uri.fromFile(new File(getFilesDirectoryPath() + File.separator + "logo.jpg"));
         StorageReference riversRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/images/avatar.jpg");
 
-        riversRef.putFile(file)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        riversRef.putFile(file);
+    }
+
+    private void loadFromStorage(final int alternative, final ImageView to) {
+        final String path = getFilesDirectoryPath() + File.separator + "logo.jpg";
+        File localFile = new File(path);
+        StorageReference avatarRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/images/avatar.jpg");
+        avatarRef.getFile(localFile)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get a URL to the uploaded content
-                        //Uri downloadUrl = taskSnapshot.get;
-                        Log.d("UPLOADD", "Success");
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        GlideApp.with(context)
+                                .load(path)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .error(alternative)
+                                .into(to);
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        // ...
-                    }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle failed download
+                // ...
+            }
+        });
     }
 }
