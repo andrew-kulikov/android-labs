@@ -110,10 +110,7 @@ public class ImageManager {
             if (!mediaStorageDir.mkdirs())
                 return null;
 
-        File mediaFile;
-        String mImageName = "logo.jpg";
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
-        return mediaFile;
+        return new File(getAvatarPath());
     }
 
     public void storeImage(Bitmap image) {
@@ -124,7 +121,7 @@ public class ImageManager {
         }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile, false);
-            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            image.compress(Bitmap.CompressFormat.PNG, 80, fos);
             fos.close();
         } catch (FileNotFoundException e) {
             Log.d("Image log", "File not found: " + e.getMessage());
@@ -137,7 +134,7 @@ public class ImageManager {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return "";
 
-        return getFilesDirectoryPath() + File.separator + user.getUid();
+        return getFilesDirectoryPath() + File.separator + user.getUid() + ".jpg";
     }
 
     private void saveToStorage() {
