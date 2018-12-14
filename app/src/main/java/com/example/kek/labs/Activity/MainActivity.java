@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView logo = headerView.findViewById(R.id.accountLogo);
 
         refreshHeader();
-      
+
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationUI.setupWithNavController(navView, controller);
 

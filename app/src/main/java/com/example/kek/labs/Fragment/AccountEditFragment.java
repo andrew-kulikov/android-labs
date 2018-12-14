@@ -51,7 +51,7 @@ public class AccountEditFragment extends Fragment {
         setSaveClick();
         setupPermissions();
         setupLogo();
-        setupTextViews();
+        setupTextViews(savedInstanceState);
 
         return editView;
     }
@@ -90,24 +90,30 @@ public class AccountEditFragment extends Fragment {
                 R.drawable.about);
     }
 
-    private void setupTextViews() {
-        userManager.getUser(new UserUpdateListener() {
-            @Override
-            public void onUpdateUser(User user) {
-                setText(R.id.info_email_textEdit,
-                        user.getEmail(),
-                        getString(R.string.email_default));
-                setText(R.id.info_name_textEdit,
-                        user.getName(),
-                        getString(R.string.name_default));
-                setText(R.id.info_surname_textEdit,
-                        user.getSurname(),
-                        getString(R.string.surname_default));
-                setText(R.id.info_phone_textEdit,
-                        user.getPhone(),
-                        getString(R.string.phone_default));
-            }
-        });
+    private void setupTextViews(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            setViewText(R.id.info_email_textEdit, savedInstanceState.getString("email"));
+            setViewText(R.id.info_name_textEdit, savedInstanceState.getString("name"));
+            setViewText(R.id.info_surname_textEdit, savedInstanceState.getString("surname"));
+            setViewText(R.id.info_phone_textEdit, savedInstanceState.getString("phone"));
+        } else
+            userManager.getUser(new UserUpdateListener() {
+                @Override
+                public void onUpdateUser(User user) {
+                    setText(R.id.info_email_textEdit,
+                            user.getEmail(),
+                            getString(R.string.email_default));
+                    setText(R.id.info_name_textEdit,
+                            user.getName(),
+                            getString(R.string.name_default));
+                    setText(R.id.info_surname_textEdit,
+                            user.getSurname(),
+                            getString(R.string.surname_default));
+                    setText(R.id.info_phone_textEdit,
+                            user.getPhone(),
+                            getString(R.string.phone_default));
+                }
+            });
     }
 
     private void setText(int viewId, String value, String defaultValue) {
@@ -157,6 +163,17 @@ public class AccountEditFragment extends Fragment {
         ((MainActivity) getActivity()).refreshHeader();
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("email", getViewText(R.id.info_email_textEdit));
+        outState.putString("name", getViewText(R.id.info_name_textEdit));
+        outState.putString("surname", getViewText(R.id.info_surname_textEdit));
+        outState.putString("phone", getViewText(R.id.info_phone_textEdit));
+
+        super.onSaveInstanceState(outState);
+    }
+
+
     private void onSaveButtonClick() {
         boolean hasErrors = false;
         String email = getViewText(R.id.info_email_textEdit);
@@ -196,6 +213,10 @@ public class AccountEditFragment extends Fragment {
 
     private String getViewText(int viewId) {
         return ((EditText) editView.findViewById(viewId)).getText().toString();
+    }
+
+    private void setViewText(int viewId, String text) {
+        ((EditText) editView.findViewById(viewId)).setText(text);
     }
 
     @Override
