@@ -115,26 +115,22 @@ public class LoginFragment extends Fragment {
         String email = emailView.getText().toString();
         String password = passwordView.getText().toString();
 
-        boolean cancel = false;
         View focusView = null;
 
         if (TextUtils.isEmpty(password) || !TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             passwordView.setError(getString(R.string.error_invalid_password));
             focusView = passwordView;
-            cancel = true;
         }
 
         if (TextUtils.isEmpty(email)) {
             emailView.setError(getString(R.string.error_field_required));
             focusView = emailView;
-            cancel = true;
         } else if (!isEmailValid(email)) {
             emailView.setError(getString(R.string.error_invalid_email));
             focusView = emailView;
-            cancel = true;
         }
 
-        if (cancel) {
+        if (focusView != null) {
             focusView.requestFocus();
         } else {
             showProgress(true);

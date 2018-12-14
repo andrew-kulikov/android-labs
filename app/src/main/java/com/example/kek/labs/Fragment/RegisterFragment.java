@@ -75,8 +75,11 @@ public class RegisterFragment extends Fragment {
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(password) ||
-                !TextUtils.isEmpty(password) && !Validator.isValidPassword(password)) {
+        if (TextUtils.isEmpty(password)) {
+            passwordView.setError(getString(R.string.password_empty));
+            focusView = passwordView;
+            cancel = true;
+        } else if (!Validator.isValidPassword(password)) {
             passwordView.setError(getString(R.string.error_invalid_password));
             focusView = passwordView;
             cancel = true;
@@ -86,7 +89,7 @@ public class RegisterFragment extends Fragment {
                 !TextUtils.isEmpty(confirmation) && !Validator.isValidPassword(confirmation) ||
                 !password.equals(confirmation)) {
             confirmPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = passwordView;
+            focusView = confirmPasswordView;
             cancel = true;
         }
 
@@ -135,7 +138,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private String getViewText(int id) {
-        return ((TextView)registerView.findViewById(id)).getText().toString();
+        return ((TextView) registerView.findViewById(id)).getText().toString();
     }
 
     private void showProgress(final boolean show) {

@@ -149,8 +149,11 @@ public class ImageManager {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle failed download
-                // ...
+                GlideApp.with(context)
+                        .load(alternative)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(to);
             }
         });
     }
