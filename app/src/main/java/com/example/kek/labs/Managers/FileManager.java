@@ -10,27 +10,21 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class FileManager {
-    public String read(String fileName) {
+    private String read(String fileName) {
         try {
             File file = new File(getDirectoryPath() + File.separator + fileName);
             int length = (int) file.length();
 
             byte[] bytes = new byte[length];
-            FileInputStream in = new FileInputStream(file);
-            try {
+            try (FileInputStream in = new FileInputStream(file)) {
                 in.read(bytes);
-            } finally {
-                in.close();
             }
 
             return new String(bytes);
-        } catch (FileNotFoundException fileNotFound) {
-            return null;
         } catch (IOException ioException) {
             return null;
         }
@@ -43,7 +37,7 @@ public class FileManager {
                 + "/Files";
     }
 
-    public boolean create(String fileName, String jsonString) {
+    private boolean create(String fileName, String jsonString) {
         try {
             File file = new File(getDirectoryPath(), fileName);
             FileOutputStream fos = new FileOutputStream(file);
@@ -52,14 +46,12 @@ public class FileManager {
             }
             fos.close();
             return true;
-        } catch (FileNotFoundException fileNotFound) {
-            return false;
         } catch (IOException ioException) {
             return false;
         }
     }
 
-    public boolean isFilePresent(String fileName) {
+    private boolean isFilePresent(String fileName) {
         String path = getDirectoryPath() + File.separator + fileName;
         File file = new File(path);
         return file.exists();
@@ -86,7 +78,7 @@ public class FileManager {
         return user;
     }
 
-    public boolean saveUser(User user, String fileName) {
+    public void saveUser(User user, String fileName) {
         JSONObject json = new JSONObject();
         try {
             json.put("email", user.getEmail());
@@ -94,10 +86,9 @@ public class FileManager {
             json.put("surname", user.getSurname());
             json.put("phone", user.getPhone());
 
-            return create(fileName, json.toString());
+            create(fileName, json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return false;
     }
 }

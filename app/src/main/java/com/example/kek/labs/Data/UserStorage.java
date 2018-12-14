@@ -11,6 +11,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import androidx.annotation.NonNull;
+
 public final class UserStorage {
     public static void getUser(final String id, final UserUpdateListener listener) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -18,14 +20,13 @@ public final class UserStorage {
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.child(id).getValue(User.class);
                 listener.onUpdateUser(user);
-                Log.d("FDatabase", "Value is: " + user.getName());
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Log.w("FDatabase", "Failed to read value.", error.toException());
             }
         });
@@ -37,7 +38,7 @@ public final class UserStorage {
 
         ref.child(id).setValue(user, new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+            public void onComplete(DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
                     listener.onSaveUserError();
                 } else {

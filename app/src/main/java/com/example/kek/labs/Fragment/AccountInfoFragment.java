@@ -16,6 +16,7 @@ import com.example.kek.labs.Util.UserUpdateListener;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -48,10 +49,15 @@ public class AccountInfoFragment extends Fragment {
     }
 
     private void setupNavController() {
-        NavHostFragment host = (NavHostFragment) getActivity()
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        NavHostFragment host = (NavHostFragment) activity
                 .getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        navController = host.getNavController();
+
+        if (host != null)
+            navController = host.getNavController();
     }
 
     private void setEditButtonClick() {

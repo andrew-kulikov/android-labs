@@ -17,12 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
+import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
-import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Util.Validator;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -37,7 +39,7 @@ public class LoginFragment extends Fragment {
     private UserManager userManager;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         loginView = inflater.inflate(R.layout.fragment_login, container, false);
 
@@ -60,7 +62,8 @@ public class LoginFragment extends Fragment {
     private void loginSuccess() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
-        getActivity().finish();
+        FragmentActivity activity = getActivity();
+        if (activity != null) activity.finish();
     }
 
     private void setupViews() {
@@ -99,10 +102,14 @@ public class LoginFragment extends Fragment {
     }
 
     private void setupNavController() {
-        NavHostFragment host = (NavHostFragment) getActivity()
-                .getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
-        navController = host.getNavController();
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        NavHostFragment host = (NavHostFragment)
+                activity.getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment);
+        if (host != null)
+            navController = host.getNavController();
     }
 
     private void attemptLogin() {
@@ -126,7 +133,7 @@ public class LoginFragment extends Fragment {
         if (TextUtils.isEmpty(email)) {
             emailView.setError(getString(R.string.error_field_required));
             focusView = emailView;
-        } else if (! Validator.isValidEmail(email)) {
+        } else if (!Validator.isValidEmail(email)) {
             emailView.setError(getString(R.string.error_invalid_email));
             focusView = emailView;
         }

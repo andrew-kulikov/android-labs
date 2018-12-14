@@ -12,6 +12,7 @@ import com.example.kek.labs.R;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -28,16 +29,26 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupUri() {
-        NavHostFragment host = (NavHostFragment) getActivity()
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        NavHostFragment host = (NavHostFragment) activity
                 .getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+
+        if (host == null) return;
         NavController controller = host.getNavController();
+
         Intent intent = getActivity().getIntent();
         String action = intent.getAction();
         Uri data = intent.getData();
 
+        if (action == null) return;
+
         if (data != null && action.equals("android.intent.action.VIEW")) {
             String path = data.getPath();
+            if (path == null) return;
+
             switch (path) {
                 case "/info":
                     controller.navigate(R.id.accountInfoFragment);

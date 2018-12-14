@@ -27,6 +27,7 @@ import com.example.kek.labs.Util.Validator;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -129,7 +130,9 @@ public class AccountEditFragment extends Fragment {
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             Intent intent = imageManager.getPickImageIntent(REQUEST_IMAGE_CAPTURE, REQUEST_IMAGE_CAPTURE);
             startActivityForResult(intent, REQUEST_LOAD_IMAGE);
         }
@@ -148,19 +151,25 @@ public class AccountEditFragment extends Fragment {
                     Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
                     imageManager.storeImage(bmp);
                 } else {
-                    Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
+                    Bundle extras = data.getExtras();
+                    if (extras == null) break;
+                    Bitmap takenPhoto = (Bitmap) extras.get("data");
                     logo.setImageBitmap(takenPhoto);
                     imageManager.storeImage(takenPhoto);
                 }
                 break;
             }
             case REQUEST_IMAGE_CAPTURE: {
+                Bundle extras = data.getExtras();
+                if (extras == null) break;
                 Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
                 logo.setImageBitmap(takenPhoto);
                 imageManager.storeImage(takenPhoto);
             }
         }
-        ((MainActivity) getActivity()).refreshHeader();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null)
+            mainActivity.refreshHeader();
     }
 
     @Override
@@ -208,7 +217,9 @@ public class AccountEditFragment extends Fragment {
             }
         });
 
-        ((MainActivity) getActivity()).refreshHeader();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null)
+            mainActivity.refreshHeader();
     }
 
     private String getViewText(int viewId) {
@@ -221,7 +232,7 @@ public class AccountEditFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         permissionManager.requestPermissions(permissions, REQUEST_WRITE);

@@ -18,6 +18,7 @@ import com.example.kek.labs.Util.GlideApp;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -118,23 +119,30 @@ public class ImageManager {
             image.compress(Bitmap.CompressFormat.PNG, 90, fos);
             fos.close();
         } catch (FileNotFoundException e) {
-            Log.d("Sdf", "File not found: " + e.getMessage());
+            Log.d("Image log", "File not found: " + e.getMessage());
         } catch (IOException e) {
-            Log.d("sdfsd", "Error accessing file: " + e.getMessage());
+            Log.d("Image log", "Error accessing file: " + e.getMessage());
         }
     }
 
     private void saveToStorage() {
-        Uri file = Uri.fromFile(new File(getFilesDirectoryPath() + File.separator + "logo.jpg"));
-        StorageReference riversRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/images/avatar.jpg");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        Uri file = Uri.fromFile(new File(getFilesDirectoryPath() + File.separator + user.getUid()));
+        StorageReference riversRef = storageRef.child("users/" + user.getUid() + "/images/avatar.jpg");
 
         riversRef.putFile(file);
     }
 
     private void loadFromStorage(final int alternative, final ImageView to) {
-        final String path = getFilesDirectoryPath() + File.separator + "logo.jpg";
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        final String path = getFilesDirectoryPath() + File.separator + user.getUid();
         File localFile = new File(path);
-        StorageReference avatarRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/images/avatar.jpg");
+
+        StorageReference avatarRef = storageRef.child("users/" + user.getUid() + "/images/avatar.jpg");
         avatarRef.getFile(localFile)
                 .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override

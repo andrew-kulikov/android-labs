@@ -22,7 +22,9 @@ import com.example.kek.labs.R;
 import com.example.kek.labs.Util.AuthEventListener;
 import com.example.kek.labs.Util.Validator;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 
 public class RegisterFragment extends Fragment {
@@ -36,7 +38,7 @@ public class RegisterFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         registerView = inflater.inflate(R.layout.fragment_register, container, false);
 
@@ -166,7 +168,10 @@ public class RegisterFragment extends Fragment {
     private void registerSuccess() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
-        getActivity().finish();
+
+        FragmentActivity activity = getActivity();
+        if (activity != null)
+            activity.finish();
     }
 
     private void registerFail() {

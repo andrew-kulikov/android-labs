@@ -1,5 +1,6 @@
 package com.example.kek.labs.Managers;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
 
 public class UserManager {
+    @SuppressLint("StaticFieldLeak")
     private static final UserManager instance = new UserManager();
 
     private Activity activity;
@@ -40,7 +42,10 @@ public class UserManager {
     }
 
     public void getUser(final UserUpdateListener listener) {
-        if (user == null || !FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user.getEmail())) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser == null || firebaseUser.getEmail() == null) return;
+
+        if (user == null || !firebaseUser.getEmail().equals(user.getEmail())) {
             UserStorage.getUser(FirebaseAuth.getInstance().getUid(), new UserUpdateListener() {
                 @Override
                 public void onUpdateUser(User _user) {
@@ -52,8 +57,11 @@ public class UserManager {
     }
 
     public void saveUser(User user, final UserSaveListener listener) {
-        FirebaseAuth.getInstance().getCurrentUser().updateEmail(user.getEmail());
-        UserStorage.saveUser(FirebaseAuth.getInstance().getUid(), user, listener);
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser == null) return;
+
+        firebaseUser.updateEmail(user.getEmail());
+        UserStorage.saveUser(firebaseUser.getUid(), user, listener);
     }
 
     public void register(User user, String password, AuthEventListener listener) {
@@ -74,6 +82,7 @@ public class UserManager {
         loginTask.execute((Void) null);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String email;
@@ -111,6 +120,7 @@ public class UserManager {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
         private final User user;
@@ -131,6 +141,8 @@ public class UserManager {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
+                                if (curUser == null) return;
+
                                 UserStorage.saveUser(curUser.getUid(), user, new UserSaveListener() {
                                     @Override
                                     public void onSaveUserSuccess() {
