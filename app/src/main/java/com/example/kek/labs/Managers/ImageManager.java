@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -14,6 +15,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.MyApplication;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.GlideApp;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,11 +29,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 public class ImageManager {
     private Context context;
+    private StorageReference storageRef;
 
     public ImageManager() {
         this.context = MyApplication.getAppContext();
+        storageRef = FirebaseStorage.getInstance().getReference();
     }
 
     public Intent getPickImageIntent(int requestCameraCode, int requestLoadCode) {
@@ -63,7 +74,7 @@ public class ImageManager {
         return list;
     }
 
-    private String getLogoDirectoryPath() {
+    private String getFilesDirectoryPath() {
         return Environment.getExternalStorageDirectory()
                 + "/Android/data/"
                 + context.getApplicationContext().getPackageName()
@@ -72,7 +83,7 @@ public class ImageManager {
 
     public void LoadImage(ImageView to, String path, int alternative) {
         GlideApp.with(context)
-                .load(getLogoDirectoryPath() + File.separator + path)
+                .load(getFilesDirectoryPath() + File.separator + path)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .error(alternative)
@@ -80,7 +91,7 @@ public class ImageManager {
     }
 
     private File getOutputMediaFile() {
-        File mediaStorageDir = new File(getLogoDirectoryPath());
+        File mediaStorageDir = new File(getFilesDirectoryPath());
 
         if (!mediaStorageDir.exists())
             if (!mediaStorageDir.mkdirs())
@@ -93,6 +104,7 @@ public class ImageManager {
     }
 
     public void storeImage(Bitmap image) {
+        saveToStorage();
         File pictureFile = getOutputMediaFile();
         if (pictureFile == null) {
             return;
@@ -106,5 +118,27 @@ public class ImageManager {
         } catch (IOException e) {
             Log.d("sdfsd", "Error accessing file: " + e.getMessage());
         }
+    }
+
+    private void saveToStorage() {
+        Uri file = Uri.fromFile(new File(getFilesDirectoryPath() + File.separator + "logo.jpg"));
+        StorageReference riversRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/images/avatar.jpg");
+
+        riversRef.putFile(file)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        //Uri downloadUrl = taskSnapshot.get;
+                        Log.d("UPLOADD", "Success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        // ...
+                    }
+                });
     }
 }
