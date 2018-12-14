@@ -1,10 +1,8 @@
 package com.example.kek.labs.Activity;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +27,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -110,8 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currentFragment instanceof AccountEditFragment) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     showNavigateDialog(id);
-                }
-                else {
+                } else {
                     MainActivity.this.onNavigationItemSelected(id);
                 }
                 return true;
@@ -174,15 +170,23 @@ public class MainActivity extends AppCompatActivity {
         if (drawerToggle.onOptionsItemSelected(item))
             return true;
 
+
         switch (id) {
             case R.id.about_item:
-                navController.navigate(R.id.aboutFragment);
+                Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+                if (currentFragment instanceof AccountEditFragment) {
+                    showNavigateDialog(R.id.about_nav_item);
+                } else {
+                    navController.navigate(R.id.aboutFragment);
+                }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
+
 }
