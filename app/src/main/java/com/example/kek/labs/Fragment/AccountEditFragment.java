@@ -102,24 +102,19 @@ public class AccountEditFragment extends Fragment {
                 @Override
                 public void onUpdateUser(User user) {
                     setText(R.id.info_email_textEdit,
-                            user.getEmail(),
-                            getString(R.string.email_default));
+                            user.getEmail());
                     setText(R.id.info_name_textEdit,
-                            user.getName(),
-                            getString(R.string.name_default));
+                            user.getName());
                     setText(R.id.info_surname_textEdit,
-                            user.getSurname(),
-                            getString(R.string.surname_default));
+                            user.getSurname());
                     setText(R.id.info_phone_textEdit,
-                            user.getPhone(),
-                            getString(R.string.phone_default));
+                            user.getPhone());
                 }
             });
     }
 
-    private void setText(int viewId, String value, String defaultValue) {
-        String finalValue = value != null ? value : defaultValue;
-        ((EditText) editView.findViewById(viewId)).setText(finalValue);
+    private void setText(int viewId, String value) {
+        ((EditText) editView.findViewById(viewId)).setText(value);
     }
 
 
