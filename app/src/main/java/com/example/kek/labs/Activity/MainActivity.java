@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.kek.labs.Data.Storage;
-import com.example.kek.labs.Managers.FileManager;
 import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
@@ -60,21 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshHeader() {
         NavigationView navView = findViewById(R.id.nav_view);
-        View headerView = navView.getHeaderView(0);
-        ImageView logo = headerView.findViewById(R.id.accountLogo);
-        new ImageManager().LoadImage(
-                logo,
-                "logo.jpg",
-                R.drawable.about);
-
-        ((TextView) headerView.findViewById(R.id.header_email_text)).setText(Storage.getApplicationUser().getEmail());
-    }
-
-    private void setupNavigationDrawer() {
-        NavigationView navView = findViewById(R.id.nav_view);
         final View headerView = navView.getHeaderView(0);
         ImageView logo = headerView.findViewById(R.id.accountLogo);
-
         new ImageManager().LoadImage(
                 logo,
                 "logo.jpg",
@@ -86,7 +71,15 @@ public class MainActivity extends AppCompatActivity {
                 ((TextView) headerView.findViewById(R.id.header_email_text)).setText(user.getEmail());
             }
         });
+    }
 
+    private void setupNavigationDrawer() {
+        NavigationView navView = findViewById(R.id.nav_view);
+        final View headerView = navView.getHeaderView(0);
+        ImageView logo = headerView.findViewById(R.id.accountLogo);
+
+        refreshHeader();
+      
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationUI.setupWithNavController(navView, controller);
 
