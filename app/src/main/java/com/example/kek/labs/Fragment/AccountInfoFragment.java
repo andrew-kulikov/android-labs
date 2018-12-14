@@ -66,7 +66,7 @@ public class AccountInfoFragment extends Fragment {
     private void setupTextViews() {
         userManager.getUser(new UserUpdateListener() {
             @Override
-            public void UpdateUser(User user) {
+            public void onUpdateUser(User user) {
                 setText(R.id.info_email_textView,
                         user.getEmail());
                 setText(R.id.info_name_textView,

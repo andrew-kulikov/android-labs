@@ -15,12 +15,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
-import com.example.kek.labs.Data.Storage;
+import com.example.kek.labs.Managers.ImageManager;
+import com.example.kek.labs.Managers.PermissionManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Managers.ImageManager;
-import com.example.kek.labs.Managers.PermissionManager;
+import com.example.kek.labs.Util.UserSaveListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.example.kek.labs.Util.Validator;
 
@@ -93,7 +93,7 @@ public class AccountEditFragment extends Fragment {
     private void setupTextViews() {
         userManager.getUser(new UserUpdateListener() {
             @Override
-            public void UpdateUser(User user) {
+            public void onUpdateUser(User user) {
                 setText(R.id.info_email_textEdit,
                         user.getEmail(),
                         getString(R.string.email_default));
@@ -179,13 +179,18 @@ public class AccountEditFragment extends Fragment {
                 getViewText(R.id.info_surname_textEdit),
                 phone);
 
-        try {
-            userManager.saveUser(user);
-            Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e) {
-            Toast.makeText(getContext(), "Error while saving user", Toast.LENGTH_LONG).show();
-        }
+        userManager.saveUser(user, new UserSaveListener() {
+            @Override
+            public void onSaveUserSuccess() {
+                Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSaveUserError() {
+                Toast.makeText(getContext(), "Error while saving user", Toast.LENGTH_LONG).show();
+            }
+        });
+
         ((MainActivity) getActivity()).refreshHeader();
     }
 

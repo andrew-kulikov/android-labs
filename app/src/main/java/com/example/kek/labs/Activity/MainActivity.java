@@ -11,8 +11,10 @@ import android.widget.TextView;
 import com.example.kek.labs.Data.Storage;
 import com.example.kek.labs.Managers.FileManager;
 import com.example.kek.labs.Managers.ImageManager;
+import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.UserUpdateListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -31,21 +33,17 @@ public class MainActivity extends AppCompatActivity {
     private NavController controller;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupUser();
+        userManager = UserManager.getInstance(this);
+
         setupNavController();
         setupNavigationDrawer();
-    }
-
-    private void setupUser() {
-        User user = new FileManager().getUser("storage.json");
-
-        Storage.setApplicationUser(user);
     }
 
     private void setupNavController() {
@@ -67,14 +65,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupNavigationDrawer() {
         NavigationView navView = findViewById(R.id.nav_view);
-        View headerView = navView.getHeaderView(0);
+        final View headerView = navView.getHeaderView(0);
         ImageView logo = headerView.findViewById(R.id.accountLogo);
 
         new ImageManager().LoadImage(
                 logo,
                 "logo.jpg",
                 R.drawable.about);
-        ((TextView) headerView.findViewById(R.id.header_email_text)).setText(Storage.getApplicationUser().getEmail());
+
+        userManager.getUser(new UserUpdateListener() {
+            @Override
+            public void onUpdateUser(User user) {
+                ((TextView) headerView.findViewById(R.id.header_email_text)).setText(user.getEmail());
+            }
+        });
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationUI.setupWithNavController(navView, controller);

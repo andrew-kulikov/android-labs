@@ -3,6 +3,7 @@ package com.example.kek.labs.Data;
 import android.util.Log;
 
 import com.example.kek.labs.Models.User;
+import com.example.kek.labs.Util.UserSaveListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,7 +20,7 @@ public final class UserStorage {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.child(id).getValue(User.class);
-                listener.UpdateUser(user);
+                listener.onUpdateUser(user);
                 Log.d("FDatabase", "Value is: " + user.getName());
             }
 
@@ -30,10 +31,19 @@ public final class UserStorage {
         });
     }
 
-    public static void saveUser(final String id, User user) {
+    public static void saveUser(final String id, User user, final UserSaveListener listener) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("users");
 
-        ref.child(id).setValue(user);
+        ref.child(id).setValue(user, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    listener.onSaveUserError();
+                } else {
+                    listener.onSaveUserSuccess();
+                }
+            }
+        });
     }
 }

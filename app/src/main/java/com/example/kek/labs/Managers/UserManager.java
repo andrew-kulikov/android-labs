@@ -2,10 +2,12 @@ package com.example.kek.labs.Managers;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.kek.labs.Data.UserStorage;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.Util.AuthEventListener;
+import com.example.kek.labs.Util.UserSaveListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,7 +25,8 @@ public class UserManager {
     private UserRegisterTask registerTask;
     private User user;
 
-    private UserManager() {}
+    private UserManager() {
+    }
 
     public static UserManager getInstance(Activity activity) {
         instance.activity = activity;
@@ -41,16 +44,17 @@ public class UserManager {
         if (user == null) {
             UserStorage.getUser(FirebaseAuth.getInstance().getUid(), new UserUpdateListener() {
                 @Override
-                public void UpdateUser(User _user) {
+                public void onUpdateUser(User _user) {
                     user = _user;
-                    listener.UpdateUser(user);
+                    listener.onUpdateUser(user);
                 }
             });
-        } else listener.UpdateUser(user);
+        } else listener.onUpdateUser(user);
     }
 
-    public void saveUser(User user) {
-        UserStorage.saveUser(FirebaseAuth.getInstance().getUid(), user);
+    public void saveUser(User user, final UserSaveListener listener) {
+        FirebaseAuth.getInstance().getCurrentUser().updateEmail(user.getEmail());
+        UserStorage.saveUser(FirebaseAuth.getInstance().getUid(), user, listener);
     }
 
     public void register(User user, String password, AuthEventListener listener) {
@@ -93,6 +97,8 @@ public class UserManager {
                                 listener.onAuthSuccess();
                             else
                                 listener.onAuthFail();
+
+                            loginTask = null;
                         }
                     });
 
@@ -126,10 +132,21 @@ public class UserManager {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
-                                UserStorage.saveUser(curUser.getUid(), user);
+                                UserStorage.saveUser(curUser.getUid(), user, new UserSaveListener() {
+                                    @Override
+                                    public void onSaveUserSuccess() {
+                                        Log.d("Registration", "User saved successfully");
+                                    }
+
+                                    @Override
+                                    public void onSaveUserError() {
+                                        Log.d("Registration", "Db error while saving");
+                                    }
+                                });
                                 listener.onAuthSuccess();
                             } else
                                 listener.onAuthFail();
+                            registerTask = null;
                         }
                     });
 
