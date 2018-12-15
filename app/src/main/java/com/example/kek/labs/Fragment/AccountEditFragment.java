@@ -274,10 +274,6 @@ public class AccountEditFragment extends Fragment {
             }
         });
 
-
-
-        //Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
-        //imageManager.storeImage(bmp, imageListener);
     }
 
     private String getViewText(int viewId) {
