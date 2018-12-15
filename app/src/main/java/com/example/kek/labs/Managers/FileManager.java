@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class FileManager {
+public final class FileManager {
     private String read(String fileName) {
         try {
             File file = new File(getDirectoryPath() + File.separator + fileName);
@@ -26,7 +26,7 @@ public class FileManager {
         }
     }
 
-    private String getDirectoryPath() {
+    public static String getDirectoryPath() {
         return Environment.getExternalStorageDirectory()
                 + "/Android/data/"
                 + MyApplication.getAppContext().getPackageName()
