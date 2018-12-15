@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.Managers.PermissionManager;
 import com.example.kek.labs.Models.FeedItem;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.GlideApp;
 import com.example.kek.labs.Util.RssReaderTask;
 
 import org.jsoup.Jsoup;
@@ -104,7 +107,7 @@ public class HomeFragment extends Fragment {
                     } else if (curNode.getNodeName().equalsIgnoreCase("link")) {
                         item.setLink(curNode.getTextContent());
                     } else if (curNode.getNodeName().equalsIgnoreCase("enclosure")) {
-                        enclosureUri = curNode.getTextContent();
+                        enclosureUri = curNode.getAttributes().getNamedItem("url").getTextContent();
                     } else if (curNode.getNodeName().equalsIgnoreCase("media:thumbnail")) {
                         //this will return us thumbnail url
                         mediaUri = curNode.getAttributes().item(0).getTextContent();
@@ -112,10 +115,10 @@ public class HomeFragment extends Fragment {
                 }
                 String url = mediaUri;
                 if (mediaUri == null || mediaUri.length() == 0) {
-                    if (descriptionUri != null && descriptionUri.length() != 0)
-                        url = descriptionUri;
-                    else
+                    if (enclosureUri != null && enclosureUri.length() != 0)
                         url = enclosureUri;
+                    else
+                        url = descriptionUri;
                 }
                 item.setThumbnailUrl(url);
                 feedItems.add(item);
@@ -200,6 +203,11 @@ public class HomeFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.textView.setText(rssRecords.get(position).getTitle());
+            GlideApp.with(context)
+                    .load(rssRecords.get(position).getThumbnailUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(holder.imageView);
         }
 
         @Override
@@ -213,10 +221,12 @@ public class HomeFragment extends Fragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             TextView textView;
+            ImageView imageView;
 
             ViewHolder(View v) {
                 super(v);
                 textView = v.findViewById(R.id.card_text_view);
+                imageView = v.findViewById(R.id.card_image);
             }
         }
     }
