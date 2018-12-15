@@ -14,7 +14,7 @@ import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.SaveImageListener;
+import com.example.kek.labs.Util.DownloadImageListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         final View headerView = navView.getHeaderView(0);
         ImageView logo = headerView.findViewById(R.id.accountLogo);
 
-        SaveImageListener listener = new SaveImageListener() {
+        DownloadImageListener listener = new DownloadImageListener() {
             @Override
             public void onImageDownloadFinished() {
 

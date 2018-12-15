@@ -22,7 +22,8 @@ import com.example.kek.labs.Managers.PermissionManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.SaveImageListener;
+import com.example.kek.labs.Util.DownloadImageListener;
+import com.example.kek.labs.Util.UploadImageListener;
 import com.example.kek.labs.Util.UserSaveListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 import com.example.kek.labs.Util.Validator;
@@ -98,7 +99,7 @@ public class AccountEditFragment extends Fragment {
         logo = editView.findViewById(R.id.accountLogo);
         imageManager = new ImageManager();
 
-        SaveImageListener listener = new SaveImageListener() {
+        DownloadImageListener listener = new DownloadImageListener() {
             @Override
             public void onImageDownloadFinished() {
                 showProgress(false);
@@ -179,6 +180,20 @@ public class AccountEditFragment extends Fragment {
         if (resultCode != RESULT_OK)
             return;
 
+        UploadImageListener imageListener = new UploadImageListener() {
+            @Override
+            public void onUploadSuccess() {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null)
+                    mainActivity.refreshHeader();
+                showProgress(false);
+            }
+
+            @Override
+            public void beforeUpload() {
+                showProgress(true);
+            }
+        };
 
         switch (requestCode) {
             case REQUEST_LOAD_IMAGE: {
@@ -186,14 +201,14 @@ public class AccountEditFragment extends Fragment {
 
                 if (imageUri != null) {
                     logo.setImageURI(imageUri);
-                    //Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
-                    //imageManager.storeImage(bmp, imageListener);
+                    Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
+                    imageManager.storeImage(bmp, imageListener);
                 } else {
                     Bundle extras = data.getExtras();
                     if (extras == null) break;
                     Bitmap takenPhoto = (Bitmap) extras.get("data");
                     logo.setImageBitmap(takenPhoto);
-                    //imageManager.storeImage(takenPhoto, imageListener);
+                    imageManager.storeImage(takenPhoto, imageListener);
                 }
                 break;
             }
@@ -202,10 +217,9 @@ public class AccountEditFragment extends Fragment {
                 if (extras == null) break;
                 Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
                 logo.setImageBitmap(takenPhoto);
-                //imageManager.storeImage(takenPhoto, imageListener);
+                imageManager.storeImage(takenPhoto, imageListener);
             }
         }
-        showProgress(false);
     }
 
     @Override
@@ -249,27 +263,21 @@ public class AccountEditFragment extends Fragment {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null)
                     mainActivity.refreshHeader();
+                showProgress(false);
                 Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSaveUserError() {
+                showProgress(false);
                 Toast.makeText(getContext(), "Error while saving user", Toast.LENGTH_LONG).show();
             }
         });
 
-        SaveImageListener imageListener = new SaveImageListener() {
-            @Override
-            public void onImageDownloadFinished() {
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null)
-                    mainActivity.refreshHeader();
-                showProgress(false);
-            }
-        };
 
-        Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
-        imageManager.storeImage(bmp, imageListener);
+
+        //Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
+        //imageManager.storeImage(bmp, imageListener);
     }
 
     private String getViewText(int viewId) {

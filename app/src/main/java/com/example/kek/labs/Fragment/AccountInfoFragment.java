@@ -13,7 +13,7 @@ import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.SaveImageListener;
+import com.example.kek.labs.Util.DownloadImageListener;
 import com.example.kek.labs.Util.UserUpdateListener;
 
 import androidx.annotation.NonNull;
@@ -78,7 +78,7 @@ public class AccountInfoFragment extends Fragment {
         ImageView logo = infoView.findViewById(R.id.accountLogo);
         ImageManager imageManager = new ImageManager();
 
-        SaveImageListener listener = new SaveImageListener() {
+        DownloadImageListener listener = new DownloadImageListener() {
             @Override
             public void onImageDownloadFinished() {
                 showProgress(false);

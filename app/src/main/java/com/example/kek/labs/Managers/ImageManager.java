@@ -10,14 +10,14 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.MyApplication;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.GlideApp;
-import com.example.kek.labs.Util.SaveImageListener;
+import com.example.kek.labs.Util.DownloadImageListener;
+import com.example.kek.labs.Util.UploadImageListener;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -87,9 +87,7 @@ public class ImageManager {
                 + "/Files";
     }
 
-    private void LoadImage(ImageView to, String path, int alternative, SaveImageListener listener) {
-        path = getFilesDirectoryPath() + File.separator + path;
-
+    private void LoadImage(ImageView to, String path, int alternative, DownloadImageListener listener) {
         if (new File(path).exists()) {
             GlideApp.with(context)
                     .load(path)
@@ -97,10 +95,11 @@ public class ImageManager {
                     .skipMemoryCache(true)
                     .error(alternative)
                     .into(to);
+            listener.onImageDownloadFinished();
         } else loadFromStorage(alternative, to, listener);
     }
 
-    public void LoadAvatar(ImageView logo, int about, SaveImageListener listener) {
+    public void LoadAvatar(ImageView logo, int about, DownloadImageListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
@@ -118,7 +117,7 @@ public class ImageManager {
         return new File(getAvatarPath());
     }
 
-    public void storeImage(final Bitmap image, final SaveImageListener listener) {
+    public void storeImage(final Bitmap image, final UploadImageListener listener) {
 
         final File pictureFile = getOutputMediaFile();
         if (pictureFile == null) return;
@@ -144,6 +143,12 @@ public class ImageManager {
             }
 
             @Override
+            protected void onPreExecute() {
+                listener.beforeUpload();
+                super.onPreExecute();
+            }
+
+            @Override
             protected void onPostExecute(Boolean aBoolean) {
                 if (aBoolean)
                     saveToStorage(listener);
@@ -160,7 +165,7 @@ public class ImageManager {
         return getFilesDirectoryPath() + File.separator + user.getUid() + ".jpg";
     }
 
-    private void saveToStorage(final SaveImageListener listener) {
+    private void saveToStorage(final UploadImageListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
@@ -170,22 +175,22 @@ public class ImageManager {
         riversRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                listener.onImageDownloadFinished();
+                listener.onUploadSuccess();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                listener.onImageDownloadFinished();
+                listener.onUploadSuccess();
             }
         }).addOnCanceledListener(new OnCanceledListener() {
             @Override
             public void onCanceled() {
-                listener.onImageDownloadFinished();
+                listener.onUploadSuccess();
             }
         });
     }
 
-    private void loadFromStorage(final int alternative, final ImageView to, final SaveImageListener listener) {
+    private void loadFromStorage(final int alternative, final ImageView to, final DownloadImageListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
