@@ -20,7 +20,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 public class RssReaderTask extends AsyncTask<Void, Void, Document> {
-    interface onDownloadedListener {
+    public interface onDownloadedListener {
         void onPostExecute(Document rss);
     }
 
