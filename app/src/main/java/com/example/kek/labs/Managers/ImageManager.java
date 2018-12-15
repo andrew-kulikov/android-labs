@@ -1,10 +1,12 @@
 package com.example.kek.labs.Managers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -116,20 +118,39 @@ public class ImageManager {
         return new File(getAvatarPath());
     }
 
-    public void storeImage(Bitmap image, SaveImageListener listener) {
-        saveToStorage(listener);
-        File pictureFile = getOutputMediaFile();
+    public void storeImage(final Bitmap image, final SaveImageListener listener) {
+
+        final File pictureFile = getOutputMediaFile();
         if (pictureFile == null) return;
 
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile, false);
-            image.compress(Bitmap.CompressFormat.PNG, 80, fos);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d("Image log", "File not found: " + e.getMessage());
-        } catch (IOException e) {
-            Log.d("Image log", "Error accessing file: " + e.getMessage());
-        }
+        @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(pictureFile, false);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                image.compress(Bitmap.CompressFormat.JPEG, 60, fos);
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (aBoolean)
+                    saveToStorage(listener);
+                super.onPostExecute(aBoolean);
+            }
+        };
+        task.execute();
     }
 
     private String getAvatarPath() {

@@ -1,13 +1,14 @@
 package com.example.kek.labs.Fragment;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ public class AccountEditFragment extends Fragment {
     private PermissionManager permissionManager;
     private ImageManager imageManager;
     private UserManager userManager;
+    private View editFormView;
+    private View progressView;
 
     @Nullable
     @Override
@@ -50,6 +53,7 @@ public class AccountEditFragment extends Fragment {
 
         userManager = UserManager.getInstance(getActivity());
 
+        setupViews();
         setEditLogoClick();
         setSaveClick();
         setupPermissions();
@@ -57,6 +61,11 @@ public class AccountEditFragment extends Fragment {
         setupTextViews(savedInstanceState);
 
         return editView;
+    }
+
+    private void setupViews() {
+        editFormView = editView.findViewById(R.id.account_edit_form);
+        progressView = editView.findViewById(R.id.image_progress);
     }
 
     private void setSaveClick() {
@@ -85,16 +94,41 @@ public class AccountEditFragment extends Fragment {
     }
 
     private void setupLogo() {
+        showProgress(true);
         logo = editView.findViewById(R.id.accountLogo);
         imageManager = new ImageManager();
 
         SaveImageListener listener = new SaveImageListener() {
             @Override
             public void onImageDownloadFinished() {
-
+                showProgress(false);
             }
         };
         imageManager.LoadAvatar(logo, R.drawable.about, listener);
+    }
+
+    private void showProgress(final boolean show) {
+        if(editFormView == null || progressView == null || getContext() == null) return;
+
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        editFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        editFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                editFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     private void setupTextViews(Bundle savedInstanceState) {
@@ -133,6 +167,7 @@ public class AccountEditFragment extends Fragment {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         FragmentActivity activity = getActivity();
         if (activity == null) return;
+
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             Intent intent = imageManager.getPickImageIntent(REQUEST_IMAGE_CAPTURE, REQUEST_IMAGE_CAPTURE);
             startActivityForResult(intent, REQUEST_LOAD_IMAGE);
@@ -144,26 +179,21 @@ public class AccountEditFragment extends Fragment {
         if (resultCode != RESULT_OK)
             return;
 
-        SaveImageListener imageListener = new SaveImageListener() {
-            @Override
-            public void onImageDownloadFinished() {
-                Log.d("Images save", "ok");
-            }
-        };
+
         switch (requestCode) {
             case REQUEST_LOAD_IMAGE: {
                 Uri imageUri = data.getData();
 
                 if (imageUri != null) {
                     logo.setImageURI(imageUri);
-                    Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
-                    imageManager.storeImage(bmp, imageListener);
+                    //Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
+                    //imageManager.storeImage(bmp, imageListener);
                 } else {
                     Bundle extras = data.getExtras();
                     if (extras == null) break;
                     Bitmap takenPhoto = (Bitmap) extras.get("data");
                     logo.setImageBitmap(takenPhoto);
-                    imageManager.storeImage(takenPhoto, imageListener);
+                    //imageManager.storeImage(takenPhoto, imageListener);
                 }
                 break;
             }
@@ -172,12 +202,10 @@ public class AccountEditFragment extends Fragment {
                 if (extras == null) break;
                 Bitmap takenPhoto = (Bitmap) data.getExtras().get("data");
                 logo.setImageBitmap(takenPhoto);
-                imageManager.storeImage(takenPhoto, imageListener);
+                //imageManager.storeImage(takenPhoto, imageListener);
             }
         }
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null)
-            mainActivity.refreshHeader();
+        showProgress(false);
     }
 
     @Override
@@ -207,6 +235,8 @@ public class AccountEditFragment extends Fragment {
 
         if (hasErrors) return;
 
+        showProgress(true);
+
         User user = new User(
                 email,
                 getViewText(R.id.info_name_textEdit),
@@ -216,6 +246,9 @@ public class AccountEditFragment extends Fragment {
         userManager.saveUser(user, new UserSaveListener() {
             @Override
             public void onSaveUserSuccess() {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null)
+                    mainActivity.refreshHeader();
                 Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
             }
 
@@ -225,9 +258,18 @@ public class AccountEditFragment extends Fragment {
             }
         });
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null)
-            mainActivity.refreshHeader();
+        SaveImageListener imageListener = new SaveImageListener() {
+            @Override
+            public void onImageDownloadFinished() {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null)
+                    mainActivity.refreshHeader();
+                showProgress(false);
+            }
+        };
+
+        Bitmap bmp = ((BitmapDrawable) logo.getDrawable()).getBitmap();
+        imageManager.storeImage(bmp, imageListener);
     }
 
     private String getViewText(int viewId) {
