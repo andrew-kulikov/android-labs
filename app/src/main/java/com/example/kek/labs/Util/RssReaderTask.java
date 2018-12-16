@@ -7,6 +7,7 @@ import com.example.kek.labs.Managers.FileManager;
 import org.w3c.dom.Document;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -24,14 +25,18 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
         void onPostExecute(Document rss);
     }
 
-    onDownloadedListener listener;
-    String address;
+    private onDownloadedListener listener;
+    private String address;
+
     public RssReaderTask(String address) {
         this.address = address;
     }
 
     @Override
     protected Document doInBackground(Void... voids) {
+        if (new File(FileManager.getDirectoryPath() + File.separator + "news.xml").exists()) {
+            return fromCache(address);
+        }
         return getData(address);
     }
 
@@ -46,7 +51,23 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
         return this;
     }
 
-    public Document getData(String address) {
+    private Document fromCache(String address) {
+        try {
+            File file = new File(FileManager.getDirectoryPath() + File.separator + "news.xml");
+            FileInputStream inputStream = new FileInputStream(file);
+
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document xmlDoc = builder.parse(inputStream);
+
+            return xmlDoc;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Document getData(String address) {
         try {
             URL url = new URL(address);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

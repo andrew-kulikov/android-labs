@@ -57,13 +57,6 @@ public class HomeFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        List<String> cards = new ArrayList<>();
-        cards.add("3244");
-        cards.add("syn");
-        cards.add("sobaki");
-        cards.add("naruto");
-
-
         RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss").addOnDownloadListener(new RssReaderTask.onDownloadedListener() {
             @Override
             public void onPostExecute(Document rss) {
@@ -205,8 +198,6 @@ public class HomeFragment extends Fragment {
             holder.textView.setText(rssRecords.get(position).getTitle());
             GlideApp.with(context)
                     .load(rssRecords.get(position).getThumbnailUrl())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .into(holder.imageView);
         }
 
