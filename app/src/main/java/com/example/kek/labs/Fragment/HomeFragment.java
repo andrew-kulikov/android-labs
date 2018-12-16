@@ -25,8 +25,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -229,7 +232,17 @@ public class HomeFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.textView.setText(rssRecords.get(position).getTitle());
+            SimpleDateFormat baseFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss Z", Locale.US);
+            SimpleDateFormat endFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+            String date = rssRecords.get(position).getPubDate();
+            try {
+                date = endFormat.format(baseFormat.parse(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            holder.titleTextView.setText(rssRecords.get(position).getTitle());
+            holder.dateTextView.setText(date);
             GlideApp.with(context)
                     .load(rssRecords.get(position).getThumbnailUrl())
                     .into(holder.imageView);
@@ -245,12 +258,14 @@ public class HomeFragment extends Fragment {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            TextView textView;
+            TextView titleTextView;
+            TextView dateTextView;
             ImageView imageView;
 
             ViewHolder(View v) {
                 super(v);
-                textView = v.findViewById(R.id.card_text_view);
+                titleTextView = v.findViewById(R.id.card_title_text_view);
+                dateTextView = v.findViewById(R.id.card_date_text_view);
                 imageView = v.findViewById(R.id.card_image);
             }
         }
