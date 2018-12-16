@@ -35,10 +35,11 @@ public final class Parser {
                     if (curNode.getNodeName().equalsIgnoreCase("title")) {
                         item.setTitle(curNode.getTextContent());
                     } else if (curNode.getNodeName().equalsIgnoreCase("description")) {
-                        Elements images = Jsoup.parse(curNode.getTextContent()).getElementsByTag("img");
+                        org.jsoup.nodes.Document description = Jsoup.parse(curNode.getTextContent());
+                        Elements images = description.getElementsByTag("img");
                         if (images != null && images.size() != 0)
                             descriptionUri = images.get(0).attr("src");
-                        item.setDescription(curNode.getTextContent());
+                        item.setDescription(description.text());
                     } else if (curNode.getNodeName().equalsIgnoreCase("pubDate")) {
                         item.setPubDate(curNode.getTextContent());
                     } else if (curNode.getNodeName().equalsIgnoreCase("link")) {
@@ -46,7 +47,6 @@ public final class Parser {
                     } else if (curNode.getNodeName().equalsIgnoreCase("enclosure")) {
                         enclosureUri = curNode.getAttributes().getNamedItem("url").getTextContent();
                     } else if (curNode.getNodeName().equalsIgnoreCase("media:thumbnail")) {
-                        //this will return us thumbnail url
                         mediaUri = curNode.getAttributes().item(0).getTextContent();
                     }
                 }

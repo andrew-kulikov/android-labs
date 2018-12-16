@@ -45,7 +45,8 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
 
     @Override
     protected Document doInBackground(Void... voids) {
-        if (includeCache && new File(FileManager.getDirectoryPath() + File.separator + getNewsFileName(address)).exists()) {
+        String newsFileName = FileManager.getDirectoryPath() + File.separator + getNewsFileName(address);
+        if (includeCache && new File(newsFileName).exists()) {
             return fromCache(address);
         }
         return getData(address);
