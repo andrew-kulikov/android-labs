@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.kek.labs.Managers.PermissionManager;
 import com.example.kek.labs.Models.FeedItem;
 import com.example.kek.labs.R;
@@ -38,6 +37,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class HomeFragment extends Fragment {
     private final int REQUEST_INTERNET = 228;
@@ -45,16 +45,35 @@ public class HomeFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private PermissionManager permissionManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         View homeView = inflater.inflate(R.layout.home_fragment, container, false);
 
         setupUri();
         setupPermissions();
 
         mRecyclerView = homeView.findViewById(R.id.rss_recycler_view);
+
+        swipeRefreshLayout = homeView.findViewById(R.id.refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss", false).addOnDownloadListener(new RssReaderTask.onDownloadedListener() {
+                            @Override
+                            public void onPostExecute(Document rss) {
+                                mAdapter = new MyAdapter(parseRss(rss), getContext());
+                                mRecyclerView.setAdapter(mAdapter);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                        readerTask.execute();
+                    }
+                }
+        );
 
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -65,13 +84,20 @@ public class HomeFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss").addOnDownloadListener(new RssReaderTask.onDownloadedListener() {
+        RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss", true).addOnBeforeDownloadListener(new RssReaderTask.onBeforeDownloadListener() {
             @Override
-            public void onPostExecute(Document rss) {
-                mAdapter = new MyAdapter(parseRss(rss), getContext());
-                mRecyclerView.setAdapter(mAdapter);
+            public void onPreExecute() {
+                swipeRefreshLayout.setRefreshing(true);
             }
-        });
+        })
+                .addOnDownloadListener(new RssReaderTask.onDownloadedListener() {
+                    @Override
+                    public void onPostExecute(Document rss) {
+                        mAdapter = new MyAdapter(parseRss(rss), getContext());
+                        mRecyclerView.setAdapter(mAdapter);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
         readerTask.execute();
 
         return homeView;

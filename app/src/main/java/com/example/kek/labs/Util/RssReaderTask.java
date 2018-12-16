@@ -25,16 +25,27 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
         void onPostExecute(Document rss);
     }
 
-    private onDownloadedListener listener;
-    private String address;
+    public interface onBeforeDownloadListener {
+        void onPreExecute();
+    }
 
-    public RssReaderTask(String address) {
+    private onDownloadedListener downloadedListener;
+    private onBeforeDownloadListener beforeDownloadedListener;
+    private String address;
+    private Boolean includeCache;
+
+    public RssReaderTask(String address, Boolean includeCache) {
         this.address = address;
+        this.includeCache = includeCache;
+    }
+
+    private String getNewsFileName(String address) {
+        return address.split("//")[1].split("/")[0] + ".xml";
     }
 
     @Override
     protected Document doInBackground(Void... voids) {
-        if (new File(FileManager.getDirectoryPath() + File.separator + "news.xml").exists()) {
+        if (includeCache && new File(FileManager.getDirectoryPath() + File.separator + getNewsFileName(address)).exists()) {
             return fromCache(address);
         }
         return getData(address);
@@ -42,18 +53,30 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
 
     @Override
     protected void onPostExecute(Document document) {
-        listener.onPostExecute(document);
+        downloadedListener.onPostExecute(document);
         super.onPostExecute(document);
     }
 
+    @Override
+    protected void onPreExecute() {
+        if (beforeDownloadedListener != null)
+            beforeDownloadedListener.onPreExecute();
+        super.onPreExecute();
+    }
+
     public RssReaderTask addOnDownloadListener(onDownloadedListener listener) {
-        this.listener = listener;
+        downloadedListener = listener;
+        return this;
+    }
+
+    public RssReaderTask addOnBeforeDownloadListener(onBeforeDownloadListener listener) {
+        beforeDownloadedListener = listener;
         return this;
     }
 
     private Document fromCache(String address) {
         try {
-            File file = new File(FileManager.getDirectoryPath() + File.separator + "news.xml");
+            File file = new File(FileManager.getDirectoryPath() + File.separator + getNewsFileName(address));
             FileInputStream inputStream = new FileInputStream(file);
 
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -79,7 +102,7 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
             Document xmlDoc = builder.parse(inputStream);
 
             DOMSource source = new DOMSource(xmlDoc);
-            FileWriter writer = new FileWriter(new File(FileManager.getDirectoryPath() + File.separator + "news.xml"));
+            FileWriter writer = new FileWriter(new File(FileManager.getDirectoryPath() + File.separator + getNewsFileName(address)));
             StreamResult result = new StreamResult(writer);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
