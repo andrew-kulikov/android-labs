@@ -3,6 +3,7 @@ package com.example.kek.labs.Fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,7 +56,13 @@ public class HomeFragment extends Fragment {
 
         mRecyclerView = homeView.findViewById(R.id.rss_recycler_view);
 
-        mLayoutManager = new LinearLayoutManager(getContext());
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mLayoutManager = new GridLayoutManager(getContext(), 2);
+        } else {
+            mLayoutManager = new LinearLayoutManager(getContext());
+        }
+
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss").addOnDownloadListener(new RssReaderTask.onDownloadedListener() {
