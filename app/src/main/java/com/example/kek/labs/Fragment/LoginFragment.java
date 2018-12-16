@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.example.kek.labs.Activity.MainActivity;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.AuthEventListener;
+import com.example.kek.labs.Listeners.AuthEventListener;
 import com.example.kek.labs.Util.Validator;
 
 import androidx.annotation.NonNull;

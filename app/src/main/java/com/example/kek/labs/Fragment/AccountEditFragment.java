@@ -22,10 +22,10 @@ import com.example.kek.labs.Managers.PermissionManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Util.DownloadImageListener;
-import com.example.kek.labs.Util.UploadImageListener;
-import com.example.kek.labs.Util.UserSaveListener;
-import com.example.kek.labs.Util.UserUpdateListener;
+import com.example.kek.labs.Listeners.DownloadImageListener;
+import com.example.kek.labs.Listeners.UploadImageListener;
+import com.example.kek.labs.Listeners.UserSaveListener;
+import com.example.kek.labs.Listeners.UserUpdateListener;
 import com.example.kek.labs.Util.Validator;
 
 import androidx.annotation.NonNull;

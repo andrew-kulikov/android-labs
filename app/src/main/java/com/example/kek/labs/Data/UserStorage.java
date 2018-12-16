@@ -3,8 +3,8 @@ package com.example.kek.labs.Data;
 import android.util.Log;
 
 import com.example.kek.labs.Models.User;
-import com.example.kek.labs.Util.UserSaveListener;
-import com.example.kek.labs.Util.UserUpdateListener;
+import com.example.kek.labs.Listeners.UserSaveListener;
+import com.example.kek.labs.Listeners.UserUpdateListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

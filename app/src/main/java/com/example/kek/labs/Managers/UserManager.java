@@ -7,9 +7,9 @@ import android.util.Log;
 
 import com.example.kek.labs.Data.UserStorage;
 import com.example.kek.labs.Models.User;
-import com.example.kek.labs.Util.AuthEventListener;
-import com.example.kek.labs.Util.UserSaveListener;
-import com.example.kek.labs.Util.UserUpdateListener;
+import com.example.kek.labs.Listeners.AuthEventListener;
+import com.example.kek.labs.Listeners.UserSaveListener;
+import com.example.kek.labs.Listeners.UserUpdateListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
