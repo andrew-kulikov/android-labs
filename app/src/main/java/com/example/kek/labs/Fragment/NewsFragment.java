@@ -2,9 +2,7 @@ package com.example.kek.labs.Fragment;
 
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +18,6 @@ import org.w3c.dom.Document;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,12 +30,14 @@ public class NewsFragment extends androidx.fragment.app.Fragment implements RssR
     private RecyclerView.LayoutManager mLayoutManager;
     private PermissionManager permissionManager;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private String address;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         newsView = inflater.inflate(R.layout.fragment_news, container, false);
 
+        setupAddress(getArguments());
         setupPermissions();
         setupRefreshLayout();
         setupLayoutManager();
@@ -49,13 +46,19 @@ public class NewsFragment extends androidx.fragment.app.Fragment implements RssR
         return newsView;
     }
 
+    private void setupAddress(Bundle bundle) {
+        if (bundle != null) {
+            address = bundle.getString("address");
+        }
+    }
+
     private void setupRefreshLayout() {
         swipeRefreshLayout = newsView.findViewById(R.id.refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss",
+                        RssReaderTask readerTask = new RssReaderTask(address,
                                 false).addOnDownloadListener(NewsFragment.this);
                         readerTask.execute();
                     }
@@ -67,12 +70,14 @@ public class NewsFragment extends androidx.fragment.app.Fragment implements RssR
         mRecyclerView = newsView.findViewById(R.id.rss_recycler_view);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        RssReaderTask readerTask = new RssReaderTask("https://news.tut.by/rss/index.rss", true).addOnBeforeDownloadListener(new RssReaderTask.onBeforeDownloadListener() {
-            @Override
-            public void onPreExecute() {
-                swipeRefreshLayout.setRefreshing(true);
-            }
-        }).addOnDownloadListener(this);
+        RssReaderTask readerTask = new RssReaderTask(address, true)
+                .addOnBeforeDownloadListener(new RssReaderTask.onBeforeDownloadListener() {
+                    @Override
+                    public void onPreExecute() {
+                        swipeRefreshLayout.setRefreshing(true);
+                    }
+                })
+                .addOnDownloadListener(this);
         readerTask.execute();
     }
 

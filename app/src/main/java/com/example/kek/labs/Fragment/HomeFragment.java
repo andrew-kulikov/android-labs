@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.kek.labs.R;
 
@@ -27,10 +30,26 @@ public class HomeFragment extends Fragment {
 
         setupUri();
         setupNavController();
+        setupListView();
 
-        navController.navigate(R.id.newsFragment);
+        //navController.navigate(R.id.newsFragment);
 
         return homeView;
+    }
+
+    private void setupListView() {
+        ListView addressListView = homeView.findViewById(R.id.news_address_list);
+        final String[] addresses = new String[]{"https://news.tut.by/rss/index.rss", "https://www.onliner.by/feed"};
+        ArrayAdapter<String> addressAdapter = new ArrayAdapter<>(getContext(), R.layout.address_list_item, addresses);
+        addressListView.setAdapter(addressAdapter);
+        addressListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle bundle = new Bundle();
+                bundle.putString("address", addresses[position]);
+                navController.navigate(R.id.newsFragment, bundle);
+            }
+        });
     }
 
     private void setupNavController() {
