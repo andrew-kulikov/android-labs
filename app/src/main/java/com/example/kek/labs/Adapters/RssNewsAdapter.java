@@ -57,6 +57,7 @@ public class RssNewsAdapter extends RecyclerView.Adapter<RssNewsAdapter.ViewHold
 
         holder.titleTextView.setText(rssRecords.get(position).getTitle());
         holder.dateTextView.setText(date);
+        holder.descriptionTextView.setText(rssRecords.get(position).getDescription());
         GlideApp.with(context)
                 .load(rssRecords.get(position).getThumbnailUrl())
                 .into(holder.imageView);
@@ -83,6 +84,7 @@ public class RssNewsAdapter extends RecyclerView.Adapter<RssNewsAdapter.ViewHold
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView;
         TextView dateTextView;
+        TextView descriptionTextView;
         ImageView imageView;
         CardView cardView;
 
@@ -92,6 +94,7 @@ public class RssNewsAdapter extends RecyclerView.Adapter<RssNewsAdapter.ViewHold
             dateTextView = v.findViewById(R.id.card_date_text_view);
             imageView = v.findViewById(R.id.card_image);
             cardView = v.findViewById(R.id.rss_card);
+            descriptionTextView = v.findViewById(R.id.card_description_text_view);
         }
     }
 }
