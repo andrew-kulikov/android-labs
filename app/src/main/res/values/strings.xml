@@ -43,4 +43,6 @@
     <string name="navigation_confirmation_content">You can lose unsaved data</string>
     <string name="password_empty">Password is empty</string>
     <string name="add_address">Add</string>
+    <string name="build_version">Build version</string>
+    <string name="imei_text_view_label">IMEI</string>
 </resources>
