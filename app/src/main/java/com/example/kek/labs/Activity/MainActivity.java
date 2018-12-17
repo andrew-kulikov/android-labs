@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.kek.labs.Fragment.AccountEditFragment;
+import com.example.kek.labs.Managers.FileManager;
 import com.example.kek.labs.Managers.ImageManager;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
@@ -18,6 +19,11 @@ import com.example.kek.labs.Listeners.DownloadImageListener;
 import com.example.kek.labs.Listeners.UserUpdateListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -140,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.logout_menu_item:
                 FirebaseAuth.getInstance().signOut();
+                try {
+                    FileUtils.cleanDirectory(new File(FileManager.getDirectoryPath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
