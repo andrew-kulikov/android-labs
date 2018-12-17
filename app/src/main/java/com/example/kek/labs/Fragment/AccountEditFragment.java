@@ -281,7 +281,7 @@ public class AccountEditFragment extends Fragment {
                     mainActivity.refreshHeader();
                 showProgress(false);
                 Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.accountInfoFragment);
+                navController.navigate(R.id.homeFragment);
             }
 
             @Override
