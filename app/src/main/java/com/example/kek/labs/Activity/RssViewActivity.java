@@ -18,7 +18,6 @@ public class RssViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String link = intent.getStringExtra("link");
         WebView webView = findViewById(R.id.rss_web_view);
-        //webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(link);
     }
 }
