@@ -61,10 +61,5 @@ public final class FileManager {
             return false;
         }
     }
-
-    private boolean isFilePresent(String fileName) {
-        String path = getDirectoryPath() + File.separator + fileName;
-        File file = new File(path);
-        return file.exists();
-    }
+    
 }
