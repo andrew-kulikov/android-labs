@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.kek.labs.Adapters.RssNewsAdapter;
 import com.example.kek.labs.Managers.PermissionManager;
@@ -115,6 +116,10 @@ public class NewsFragment extends androidx.fragment.app.Fragment implements RssR
         RecyclerView.Adapter mAdapter = new RssNewsAdapter(Parser.parseRss(rss), getContext());
         mRecyclerView.setAdapter(mAdapter);
         swipeRefreshLayout.setRefreshing(false);
+
+        if (rss == null) {
+            Toast.makeText(getContext(), "Source is not valid rss", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

@@ -28,7 +28,8 @@ public class RssNewsAdapter extends RecyclerView.Adapter<RssNewsAdapter.ViewHold
     private Context context;
 
     public RssNewsAdapter(List<FeedItem> records, Context context) {
-        inflater = LayoutInflater.from(context);
+        if (context != null)
+            inflater = LayoutInflater.from(context);
         rssRecords = records;
         this.context = context;
     }
@@ -36,7 +37,9 @@ public class RssNewsAdapter extends RecyclerView.Adapter<RssNewsAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View card = inflater.inflate(R.layout.rss_card, parent, false);
+        View card = null;
+        if (inflater != null)
+            card = inflater.inflate(R.layout.rss_card, parent, false);
 
         return new ViewHolder(card);
     }
