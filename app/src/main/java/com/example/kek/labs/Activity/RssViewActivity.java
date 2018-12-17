@@ -26,7 +26,7 @@ public class RssViewActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.hide();
         WebView webView = findViewById(R.id.rss_web_view);
-        webView.getSettings().setJavaScriptEnabled(true);
+        //webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl(link);
     }

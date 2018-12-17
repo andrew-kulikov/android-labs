@@ -14,6 +14,9 @@ import android.widget.Toast;
 
 import com.example.kek.labs.Managers.FileManager;
 import com.example.kek.labs.R;
+import com.example.kek.labs.Util.RssReaderTask;
+
+import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +47,24 @@ public class HomeFragment extends Fragment {
         homeView.findViewById(R.id.add_address_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //addresses = FileManager.readAddresses();
-                EditText addressEdit = homeView.findViewById(R.id.rss_address_text_edit);
+                final EditText addressEdit = homeView.findViewById(R.id.rss_address_text_edit);
+                String address = addressEdit.getText().toString();
                 if (addresses == null) addresses = new ArrayList<>();
-                addresses.add(addressEdit.getText().toString());
-                FileManager.saveAddresses(addresses);
-                setupAdapter(addresses);
+                RssReaderTask readerTask = new RssReaderTask(address,
+                        false).addOnDownloadListener(new RssReaderTask.onDownloadedListener() {
+                    @Override
+                    public void onPostExecute(Document rss) {
+                        if (rss == null) {
+                            Toast.makeText(getContext(), "Source is not valid rss", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        addresses.add(addressEdit.getText().toString());
+                        FileManager.saveAddresses(addresses);
+                        setupAdapter(addresses);
+                    }
+                });
+                readerTask.execute();
+
             }
         });
 
