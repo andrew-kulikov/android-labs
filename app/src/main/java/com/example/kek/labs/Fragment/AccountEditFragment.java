@@ -32,6 +32,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -46,6 +48,7 @@ public class AccountEditFragment extends Fragment {
     private UserManager userManager;
     private View editFormView;
     private View progressView;
+    private NavController navController;
 
     @Nullable
     @Override
@@ -54,6 +57,7 @@ public class AccountEditFragment extends Fragment {
 
         userManager = UserManager.getInstance(getActivity());
 
+        setupNavController();
         setupViews();
         setEditLogoClick();
         setSaveClick();
@@ -62,6 +66,18 @@ public class AccountEditFragment extends Fragment {
         setupTextViews(savedInstanceState);
 
         return editView;
+    }
+
+    private void setupNavController() {
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        NavHostFragment host = (NavHostFragment) activity
+                .getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+
+        if (host != null)
+            navController = host.getNavController();
     }
 
     private void setupViews() {
@@ -265,6 +281,7 @@ public class AccountEditFragment extends Fragment {
                     mainActivity.refreshHeader();
                 showProgress(false);
                 Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.accountInfoFragment);
             }
 
             @Override
