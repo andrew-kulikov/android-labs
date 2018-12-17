@@ -8,9 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.kek.labs.Managers.FileManager;
 import com.example.kek.labs.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +29,7 @@ import androidx.navigation.fragment.NavHostFragment;
 public class HomeFragment extends Fragment {
     private View homeView;
     private NavController navController;
+    private ListView addressListView;
 
     @Nullable
     @Override
@@ -32,21 +40,45 @@ public class HomeFragment extends Fragment {
         setupNavController();
         setupListView();
 
-        //navController.navigate(R.id.newsFragment);
+
+        homeView.findViewById(R.id.add_address_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<String> addresses = FileManager.readAddresses();
+                EditText addressEdit = homeView.findViewById(R.id.rss_address_text_edit);
+                if (addresses == null) addresses = new ArrayList<>();
+                addresses.add(addressEdit.getText().toString());
+                FileManager.saveAddresses(addresses);
+                setupAdapter(addresses);
+            }
+        });
+
 
         return homeView;
     }
 
-    private void setupListView() {
-        ListView addressListView = homeView.findViewById(R.id.news_address_list);
-        final String[] addresses = new String[]{"https://news.tut.by/rss/index.rss", "https://www.onliner.by/feed"};
+    private void setupAdapter(List<String> addresses) {
         ArrayAdapter<String> addressAdapter = new ArrayAdapter<>(getContext(), R.layout.address_list_item, addresses);
         addressListView.setAdapter(addressAdapter);
+    }
+
+    private void setupListView() {
+        addressListView = homeView.findViewById(R.id.news_address_list);
+
+        final List<String> addresses = FileManager.readAddresses();
+        if (addresses == null) {
+            FileManager.saveAddresses(new ArrayList<String>());
+            Toast.makeText(getContext(), "Cannot find news sources", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        setupAdapter(addresses);
+
         addressListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Bundle bundle = new Bundle();
-                bundle.putString("address", addresses[position]);
+                bundle.putString("address", addresses.get(position));
                 navController.navigate(R.id.newsFragment, bundle);
             }
         });

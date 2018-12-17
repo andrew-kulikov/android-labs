@@ -4,15 +4,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/rss_address_text_edit"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <ListView
-        android:padding="3dp"
-        android:id="@+id/news_address_list"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/rss_address_text_edit"
+            android:layout_width="260dp"
+            android:layout_marginRight="10dp"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_address_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/add_address" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/news_address_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp" />
+    </LinearLayout>
 </LinearLayout>
