@@ -13,11 +13,13 @@ import android.provider.MediaStore;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.kek.labs.Fragment.NewsFragment;
 import com.example.kek.labs.MyApplication;
 import com.example.kek.labs.R;
 import com.example.kek.labs.Util.GlideApp;
 import com.example.kek.labs.Listeners.DownloadImageListener;
 import com.example.kek.labs.Listeners.UploadImageListener;
+import com.example.kek.labs.Util.NetworkUtil;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -118,6 +120,10 @@ public class ImageManager {
     }
 
     public void storeImage(final Bitmap image, final UploadImageListener listener) {
+        Context context = MyApplication.getAppContext();
+        if (context == null || !NetworkUtil.isNetworkAvailable(context)) {
+            return;
+        }
 
         final File pictureFile = getOutputMediaFile();
         if (pictureFile == null) return;

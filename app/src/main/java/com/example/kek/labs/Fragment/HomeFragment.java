@@ -41,8 +41,6 @@ public class HomeFragment extends Fragment {
 
         setupUri();
         setupNavController();
-        setupListView();
-
 
         homeView.findViewById(R.id.add_address_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,6 +58,7 @@ public class HomeFragment extends Fragment {
                         }
                         addresses.add(addressEdit.getText().toString());
                         FileManager.saveAddresses(addresses);
+                        setupListView();
                         setupAdapter(addresses);
                     }
                 });
@@ -67,6 +66,11 @@ public class HomeFragment extends Fragment {
 
             }
         });
+
+        setupListView();
+
+
+
 
 
         return homeView;

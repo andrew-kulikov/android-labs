@@ -16,10 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kek.labs.Activity.MainActivity;
+import com.example.kek.labs.Listeners.AuthEventListener;
 import com.example.kek.labs.Managers.UserManager;
 import com.example.kek.labs.Models.User;
 import com.example.kek.labs.R;
-import com.example.kek.labs.Listeners.AuthEventListener;
 import com.example.kek.labs.Util.Validator;
 
 import androidx.annotation.NonNull;
@@ -166,16 +166,20 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerSuccess() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        Intent intent = new Intent(activity, MainActivity.class);
         startActivity(intent);
 
-        FragmentActivity activity = getActivity();
-        if (activity != null)
-            activity.finish();
+        activity.finish();
     }
 
     private void registerFail() {
-        Toast.makeText(getActivity(), "Authentication failed.",
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+
+        Toast.makeText(activity, "Authentication failed. DONT ROTATE YOUR FUCKING SCREEN",
                 Toast.LENGTH_SHORT).show();
         passwordView.setError(getString(R.string.error_incorrect_password));
         passwordView.requestFocus();

@@ -2,14 +2,17 @@ package com.example.kek.labs.Managers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.kek.labs.Data.UserStorage;
-import com.example.kek.labs.Models.User;
 import com.example.kek.labs.Listeners.AuthEventListener;
 import com.example.kek.labs.Listeners.UserSaveListener;
 import com.example.kek.labs.Listeners.UserUpdateListener;
+import com.example.kek.labs.Models.User;
+import com.example.kek.labs.MyApplication;
+import com.example.kek.labs.Util.NetworkUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -57,6 +60,13 @@ public class UserManager {
     }
 
     public void saveUser(User user, final UserSaveListener listener) {
+        Context context = MyApplication.getAppContext();
+        if (context == null) return;
+        if (!NetworkUtil.isNetworkAvailable(context)) {
+            listener.onSaveUserError("No network detected.");
+            return;
+        }
+
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser == null) return;
 
@@ -150,10 +160,11 @@ public class UserManager {
                                     }
 
                                     @Override
-                                    public void onSaveUserError() {
-                                        Log.d("Registration", "Db error while saving");
+                                    public void onSaveUserError(String message) {
+                                        Log.d("Registration", "Db error while saving: " + message);
                                     }
                                 });
+                                FileManager.createDirs();
                                 listener.onAuthSuccess();
                             } else
                                 listener.onAuthFail();

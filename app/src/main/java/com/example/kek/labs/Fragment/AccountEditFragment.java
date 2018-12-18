@@ -3,6 +3,7 @@ package com.example.kek.labs.Fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -273,21 +274,24 @@ public class AccountEditFragment extends Fragment {
                 getViewText(R.id.info_surname_textEdit),
                 phone);
 
+        final Context context = getContext();
+        final MainActivity mainActivity = (MainActivity) getActivity();
+
+        if (context == null || mainActivity == null) return;
+
         userManager.saveUser(user, new UserSaveListener() {
             @Override
             public void onSaveUserSuccess() {
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null)
-                    mainActivity.refreshHeader();
+                mainActivity.refreshHeader();
                 showProgress(false);
-                Toast.makeText(getContext(), "User saved successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "User saved successfully", Toast.LENGTH_SHORT).show();
                 navController.navigate(R.id.homeFragment);
             }
 
             @Override
-            public void onSaveUserError() {
+            public void onSaveUserError(String message) {
                 showProgress(false);
-                Toast.makeText(getContext(), "Error while saving user", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Error while saving user: " + message, Toast.LENGTH_LONG).show();
             }
         });
 

@@ -40,7 +40,7 @@ public final class UserStorage {
             @Override
             public void onComplete(DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    listener.onSaveUserError();
+                    listener.onSaveUserError("Database error");
                 } else {
                     listener.onSaveUserSuccess();
                 }

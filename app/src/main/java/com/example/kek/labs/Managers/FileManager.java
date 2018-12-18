@@ -27,7 +27,7 @@ public final class FileManager {
             JSONArray jsonArray = new JSONArray(new String(bytes));
             List<String> list = new ArrayList<>();
             int len = jsonArray.length();
-            for (int i=0;i<len;i++){
+            for (int i = 0; i < len; i++) {
                 list.add(jsonArray.get(i).toString());
             }
             return list;
@@ -46,6 +46,12 @@ public final class FileManager {
                 + "/Files";
     }
 
+    public static void createDirs() {
+        File mediaStorageDir = new File(getDirectoryPath());
+        if (!mediaStorageDir.exists())
+            mediaStorageDir.mkdirs();
+    }
+
     public static boolean saveAddresses(List<String> addresses) {
         try {
             File file = new File(getDirectoryPath(), "addresses.json");
@@ -61,5 +67,5 @@ public final class FileManager {
             return false;
         }
     }
-    
+
 }

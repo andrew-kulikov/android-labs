@@ -1,8 +1,11 @@
 package com.example.kek.labs.Util;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.kek.labs.Fragment.NewsFragment;
 import com.example.kek.labs.Managers.FileManager;
+import com.example.kek.labs.MyApplication;
 
 import org.w3c.dom.Document;
 
@@ -52,10 +55,15 @@ public class RssReaderTask extends AsyncTask<Void, Void, Document> {
         catch (Exception e) {
             return null;
         }
-        if (includeCache && new File(newsFileName).exists()) {
+        Context context = MyApplication.getAppContext();
+        if (context == null) return null;
+        if ((includeCache || !NetworkUtil.isNetworkAvailable(context)) && new File(newsFileName).exists()) {
             return fromCache(address);
         }
-        return getData(address);
+        else if (NetworkUtil.isNetworkAvailable(MyApplication.getAppContext())) {
+            return getData(address);
+        }
+        return null;
     }
 
     @Override
